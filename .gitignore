@@ -1,0 +1,19 @@
+node_modules/
+.DS_Store
+*.local
+.env
+.env.*
+
+# Over GitHub's 100 MB limit — Homes demos play from Drive
+assets/products/homes-demos/*.mp4
+
+# Over GitHub's 100 MB limit
+assets/products/webar-demos/AR_AstrosBox.mp4
+assets/products/3dgs-demos/stump.splat
+
+# Working references, not public site assets
+assets/services/refs/
+
+# Camera originals
+*.heic
+*.HEIC

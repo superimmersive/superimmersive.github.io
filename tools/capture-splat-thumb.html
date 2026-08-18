@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Capture 3DGS thumbnail</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js"
+    }
+  }
+  </script>
+  <style>
+    html, body { margin: 0; background: #07101c; }
+    #host { width: 800px; height: 800px; }
+  </style>
+</head>
+<body>
+  <div id="host"></div>
+  <script type="module">
+    const SCENES = {
+      bonsai: {
+        url: "../assets/products/3dgs-demos/bonsai-7k-mini.splat",
+        cameraUp: [0, -1, -0.6],
+        cameraPosition: [-1, -4, 6],
+        cameraLookAt: [0, 4, 0],
+        sphericalHarmonicsDegree: 0,
+      },
+      room: {
+        url: "../assets/products/3dgs-demos/room.splat",
+        cameraUp: [0, -1, 0],
+        cameraPosition: [0, 2, 6],
+        cameraLookAt: [0, 0, 0],
+        sphericalHarmonicsDegree: 0,
+      },
+      train: {
+        url: "../assets/products/3dgs-demos/train.splat",
+        cameraUp: [0, -1, 0.16],
+        cameraPosition: [-3.01, -0.11, -3.75],
+        cameraLookAt: [0, 0.2, 0],
+        sphericalHarmonicsDegree: 0,
+      },
+    };
+
+    const sceneId = new URLSearchParams(location.search).get("scene");
+    const scene = SCENES[sceneId];
+    if (!scene) {
+      document.body.dataset.error = "Unknown scene";
+      throw new Error("Unknown scene");
+    }
+
+    const GS = await import("https://cdn.jsdelivr.net/npm/@mkkellogg/gaussian-splats-3d@0.4.7/build/gaussian-splats-3d.module.js");
+    const response = await fetch(scene.url);
+    if (!response.ok) throw new Error("Fetch failed " + response.status);
+    const buffer = await response.arrayBuffer();
+
+    const splatBuffer = await GS.SplatLoader.loadFromFileData(buffer, 1, 0, false);
+    const host = document.getElementById("host");
+    const viewer = new GS.Viewer({
+      rootElement: host,
+      cameraUp: scene.cameraUp,
+      initialCameraPosition: scene.cameraPosition,
+      initialCameraLookAt: scene.cameraLookAt,
+      sharedMemoryForWorkers: false,
+      gpuAcceleratedSort: false,
+      sphericalHarmonicsDegree: scene.sphericalHarmonicsDegree || 0,
+      antialiased: true,
+    });
+
+    await viewer.addSplatBuffers([splatBuffer], [{ splatAlphaRemovalThreshold: 1 }], true, false, false);
+    viewer.start();
+
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await new Promise((resolve) => setTimeout(resolve, sceneId === "train" ? 4000 : 2500));
+    document.body.dataset.ready = "true";
+  </script>
+</body>
+</html>
