@@ -1231,23 +1231,20 @@ address span {
 
 .glb-stage {
   max-width: 1180px;
-  border: 1px solid var(--hair);
-  background: #07101c;
 }
 
 .glb-stage model-viewer {
   display: block;
   width: 100%;
   height: min(68vh, 640px);
-  background: #07101c;
+  background: transparent;
 }
 
 .glb-stage__bar {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--hair);
+  padding: 0.35rem 0 0;
 }
 
 .glb-anim {

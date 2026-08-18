@@ -40,7 +40,7 @@
 
     <section class="sheet">
       <h2>Live 3D viewer</h2>
-      <p class="note" style="margin: -1.5rem 0 2rem; max-width: 38rem;">Drag to orbit. Scroll to zoom. Materials, textures, and both engine animations play in the browser.</p>
+      <p class="note" style="margin: -1.5rem 0 2rem; max-width: 38rem;">Left-drag to orbit. Right-drag to zoom. Materials, textures, and both engine animations play in the browser.</p>
       <div class="glb-stage">
         <model-viewer
           id="jet-viewer"
@@ -49,6 +49,7 @@
           camera-controls
           disable-pan
           disable-tap
+          disable-zoom
           touch-action="pan-y"
           camera-target="auto auto auto"
           autoplay
@@ -58,6 +59,7 @@
           environment-image="neutral"
           exposure="1.05"
           tone-mapping="aces"
+          interaction-prompt="none"
           loading="eager"
         ></model-viewer>
         <div class="glb-stage__bar">
@@ -114,18 +116,61 @@
     (function () {
       var viewer = document.getElementById("jet-viewer");
       if (!viewer) return;
-      function blockSideButtons(event) {
-        if (event.button === 1 || event.button === 2) {
+      var zooming = false;
+      var lastY = 0;
+      var baseRadius = 0;
+      viewer.addEventListener("load", function () {
+        baseRadius = viewer.getCameraOrbit().radius;
+      });
+      viewer.addEventListener("wheel", function (event) {
+        event.stopImmediatePropagation();
+      }, { capture: true, passive: true });
+      viewer.addEventListener("pointerdown", function (event) {
+        if (event.button === 1) {
           event.preventDefault();
           event.stopImmediatePropagation();
+          return;
+        }
+        if (event.button !== 2) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        zooming = true;
+        lastY = event.clientY;
+        if (!baseRadius) baseRadius = viewer.getCameraOrbit().radius;
+        viewer.setPointerCapture(event.pointerId);
+      }, true);
+      viewer.addEventListener("pointermove", function (event) {
+        if (!zooming) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        var orbit = viewer.getCameraOrbit();
+        var next = orbit.radius * Math.exp((event.clientY - lastY) * 0.008);
+        lastY = event.clientY;
+        var minR = baseRadius * 0.35;
+        var maxR = baseRadius * 3.5;
+        if (next < minR) next = minR;
+        if (next > maxR) next = maxR;
+        viewer.cameraOrbit = orbit.theta + "rad " + orbit.phi + "rad " + next + "m";
+        if (viewer.jumpCameraToGoal) viewer.jumpCameraToGoal();
+      }, true);
+      function endZoom(event) {
+        if (!zooming) return;
+        zooming = false;
+        if (event && event.pointerId != null) {
+          try { viewer.releasePointerCapture(event.pointerId); } catch (err) {}
         }
       }
-      ["pointerdown", "pointerup", "mousedown", "mouseup", "auxclick"].forEach(function (type) {
-        viewer.addEventListener(type, blockSideButtons, true);
-      });
+      viewer.addEventListener("pointerup", endZoom, true);
+      viewer.addEventListener("pointercancel", endZoom, true);
       viewer.addEventListener("contextmenu", function (event) {
         event.preventDefault();
         event.stopImmediatePropagation();
+      }, true);
+      viewer.addEventListener("auxclick", function (event) {
+        if (event.button === 1) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
       }, true);
       document.querySelectorAll(".glb-anim").forEach(function (btn) {
         btn.addEventListener("click", function () {
