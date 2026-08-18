@@ -39,6 +39,35 @@
     </section>
 
     <section class="sheet">
+      <h2>Live 3D viewer</h2>
+      <p class="note" style="margin: -1.5rem 0 2rem; max-width: 38rem;">Drag to orbit. Scroll to zoom. Materials, textures, and both engine animations play in the browser.</p>
+      <div class="glb-stage">
+        <model-viewer
+          id="jet-viewer"
+          src="../assets/services/interactive-web-demos/rotating-jet-engine.glb"
+          alt="Realtime 3D jet engine with materials, textures, and animation"
+          camera-controls
+          disable-pan
+          disable-tap
+          touch-action="pan-y"
+          camera-target="auto auto auto"
+          autoplay
+          animation-name="idle"
+          shadow-intensity="0.85"
+          shadow-softness="0.75"
+          environment-image="neutral"
+          exposure="1.05"
+          tone-mapping="aces"
+          loading="eager"
+        ></model-viewer>
+        <div class="glb-stage__bar">
+          <button type="button" class="glb-anim is-on" data-anim="idle">Idle</button>
+          <button type="button" class="glb-anim" data-anim="start_up_down">Start up / down</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="sheet">
       <h2>What we deliver</h2>
       <div class="prose">
         <ul>
@@ -79,6 +108,35 @@
       </nav>
     </section>
   </main>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
   <script src="../js/main.js"></script>
+  <script>
+    (function () {
+      var viewer = document.getElementById("jet-viewer");
+      if (!viewer) return;
+      function blockSideButtons(event) {
+        if (event.button === 1 || event.button === 2) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }
+      ["pointerdown", "pointerup", "mousedown", "mouseup", "auxclick"].forEach(function (type) {
+        viewer.addEventListener(type, blockSideButtons, true);
+      });
+      viewer.addEventListener("contextmenu", function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+      document.querySelectorAll(".glb-anim").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          viewer.animationName = btn.getAttribute("data-anim");
+          viewer.play();
+          document.querySelectorAll(".glb-anim").forEach(function (other) {
+            other.classList.toggle("is-on", other === btn);
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

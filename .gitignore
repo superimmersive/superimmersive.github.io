@@ -14,6 +14,9 @@ assets/products/3dgs-demos/stump.splat
 # Working references, not public site assets
 assets/services/refs/
 
+# Source GLB (spaces in name); the web viewer uses rotating-jet-engine.glb
+assets/services/interactive-web-demos/Rotating jet engine.glb
+
 # Camera originals
 *.heic
 *.HEIC
