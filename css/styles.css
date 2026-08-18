@@ -272,6 +272,11 @@ h1, h2, h3, strong {
   color: var(--ink-soft);
 }
 
+.prose strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
 .prose h3 {
   margin: 2.25rem 0 1rem;
   font-family: var(--display);
