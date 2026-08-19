@@ -4,8 +4,8 @@ node_modules/
 .env
 .env.*
 
-# Over GitHub's 100 MB limit — Homes demos play from Drive
-assets/products/homes-demos/*.mp4
+# Over GitHub's 100 MB limit — site uses compressed homes-01/02
+assets/products/homes-demos/SIH_SR_*.mp4
 
 # Over GitHub's 100 MB limit
 assets/products/webar-demos/AR_AstrosBox.mp4
