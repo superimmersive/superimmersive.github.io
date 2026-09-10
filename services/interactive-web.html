@@ -40,18 +40,23 @@
 
     <section class="sheet sheet--glb">
       <h2>Live 3D viewer</h2>
-      <p class="note" style="margin: -1.5rem 0 2rem; max-width: 38rem;">Left-drag to orbit. Right-drag to zoom. Materials, textures, and both engine animations play in the browser.</p>
+      <p class="note" style="margin: -1.5rem 0 2rem; max-width: 38rem;">Left-drag to orbit. Right-drag to zoom. View in AR opens Quick Look on iPhone, or a scan code on desktop.</p>
       <div class="glb-stage">
         <div class="glb-stage__view">
           <model-viewer
             id="jet-viewer"
             src="../assets/services/interactive-web-demos/rotating-jet-engine.glb"
+            ios-src="../assets/services/interactive-web-demos/rotating-jet-engine.usdz"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            ar-scale="auto"
             alt="Realtime 3D jet engine with materials, textures, and animation"
             camera-controls
             disable-pan
             disable-tap
             disable-zoom
             touch-action="pan-y"
+            camera-orbit="55deg 72deg auto"
             camera-target="auto auto auto"
             autoplay
             animation-name="idle"
@@ -62,11 +67,28 @@
             tone-mapping="aces"
             interaction-prompt="none"
             loading="eager"
-          ></model-viewer>
+          >
+            <button slot="ar-button" hidden></button>
+          </model-viewer>
+          <div class="glb-ar-panel" id="jet-ar-panel" hidden>
+            <button type="button" class="glb-ar-panel__close" id="jet-ar-close">Close</button>
+            <p>Scan with iPhone Camera</p>
+            <canvas id="jet-ar-qr" width="220" height="220"></canvas>
+            <p class="glb-ar-panel__url" id="jet-ar-url"></p>
+            <p>Opens Quick Look</p>
+          </div>
+          <div class="glb-load" id="jet-load" role="status" aria-live="polite">
+            <span class="glb-load__spin" aria-hidden="true"></span>
+            <span class="glb-load__label" id="jet-load-label">Loading model</span>
+          </div>
         </div>
         <div class="glb-stage__bar">
           <button type="button" class="glb-anim is-on" data-anim="idle">Idle</button>
           <button type="button" class="glb-anim" data-anim="start_up_down">Start up / down</button>
+          <a class="glb-ar-btn" id="jet-ar" rel="ar" href="../assets/services/interactive-web-demos/rotating-jet-engine.usdz">
+            <img src="../assets/services/interactive-web.png" alt="" width="80" height="45">
+            View in AR
+          </a>
           <button type="button" class="glb-vo" id="jet-vo" aria-label="Play explainer">
             <svg class="glb-vo__icon glb-vo__icon--play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path d="M4 9.5v5c0 .8.4 1.5 1.1 1.8l6.4 3.2c1.2.6 2.5-.3 2.5-1.6V6.1c0-1.3-1.3-2.2-2.5-1.6L5.1 7.7C4.4 8 4 8.7 4 9.5Z"/>
@@ -123,6 +145,7 @@
     </section>
   </main>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <script src="../js/qrcode.min.js"></script>
   <script src="../js/main.js"></script>
   <script>
     (function () {
@@ -131,9 +154,23 @@
       var zooming = false;
       var lastY = 0;
       var baseRadius = 0;
+      var loadEl = document.getElementById("jet-load");
+      var loadLabel = document.getElementById("jet-load-label");
+      function hideLoad() {
+        if (loadEl) loadEl.hidden = true;
+      }
+      viewer.addEventListener("progress", function (event) {
+        var amount = event.detail && event.detail.totalProgress;
+        if (!loadLabel || amount == null) return;
+        var pct = Math.round(amount * 100);
+        loadLabel.textContent = pct >= 100 ? "Loading model" : "Loading model " + pct + "%";
+      });
       viewer.addEventListener("load", function () {
         baseRadius = viewer.getCameraOrbit().radius;
+        hideLoad();
       });
+      viewer.addEventListener("error", hideLoad);
+      if (viewer.loaded) hideLoad();
       viewer.addEventListener("wheel", function (event) {
         event.stopImmediatePropagation();
       }, { capture: true, passive: true });
@@ -193,6 +230,95 @@
           });
         });
       });
+      var arBtn = document.getElementById("jet-ar");
+      var arPanel = document.getElementById("jet-ar-panel");
+      var arClose = document.getElementById("jet-ar-close");
+      var arCanvas = document.getElementById("jet-ar-qr");
+      var usdzPath = "../assets/services/interactive-web-demos/rotating-jet-engine.usdz";
+
+      function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      }
+
+      function isAndroid() {
+        return /Android/i.test(navigator.userAgent);
+      }
+
+      function isLocalHost() {
+        return /^(localhost|127\.0\.0\.1)$/i.test(location.hostname);
+      }
+
+      function phoneUsdzUrl() {
+        var local = new URL(usdzPath, location.href).href;
+        if (!isLocalHost()) return Promise.resolve(local);
+        return fetch("/lan.json", { cache: "no-store" })
+          .then(function (res) { return res.json(); })
+          .then(function (info) {
+            return new URL(usdzPath, info.origin + "/services/interactive-web.html").href;
+          })
+          .catch(function () { return local; });
+      }
+
+      function drawQr(url) {
+        var urlEl = document.getElementById("jet-ar-url");
+        if (urlEl) urlEl.textContent = url;
+        if (!window.QRCode || !QRCode.toCanvas) {
+          throw new Error("QR library missing");
+        }
+        return new Promise(function (resolve, reject) {
+          QRCode.toCanvas(arCanvas, url, {
+            width: 220,
+            margin: 1,
+            color: { dark: "#020617", light: "#f8fafc" }
+          }, function (err) {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+      }
+
+      function showQr() {
+        if (!arPanel || !arCanvas) return;
+        arPanel.hidden = false;
+        if (arBtn) arBtn.classList.add("is-on");
+        phoneUsdzUrl().then(drawQr).catch(function () {
+          var label = arPanel.querySelector("p");
+          if (label) label.textContent = "Could not build scan code";
+        });
+      }
+
+      function hideQr() {
+        if (arPanel) arPanel.hidden = true;
+        if (arBtn) arBtn.classList.remove("is-on");
+      }
+
+      function viewInAr(event) {
+        if (isIOS()) {
+          hideQr();
+          return;
+        }
+        if (event) event.preventDefault();
+        if (isAndroid() && viewer.activateAR) {
+          hideQr();
+          viewer.activateAR();
+          return;
+        }
+        if (arPanel && !arPanel.hidden) hideQr();
+        else showQr();
+      }
+
+      if (arBtn) arBtn.addEventListener("click", viewInAr);
+      if (arClose) arClose.addEventListener("click", hideQr);
+      if (arPanel) {
+        arPanel.addEventListener("click", function (event) {
+          if (event.target === arPanel) hideQr();
+        });
+      }
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") hideQr();
+      });
+
       var voBtn = document.getElementById("jet-vo");
       var vo = document.getElementById("jet-explainer");
       if (voBtn && vo) {
