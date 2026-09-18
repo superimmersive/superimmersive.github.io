@@ -7,7 +7,7 @@
   <meta name="description" content="Superimmersive Art (Pty) Ltd is a 3D and immersive technology company in George, Western Cape. Export client work funds South African product IP.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -16,129 +16,100 @@
       <img src="assets/logo-saturn.png" alt="SUPER — ringed planet — IMMERSIVE. Expand your reality." width="3148" height="755">
     </a>
     <nav class="nav" aria-label="Primary">
-      <a href="#top" aria-current="page">Company Profile</a>
+      <a href="#top" aria-current="page">Overview</a>
+      <a href="#about">About</a>
+      <a href="#work">Showcase</a>
       <a href="#products">Products</a>
       <a href="#services">Services</a>
     </nav>
   </header>
 
-  <main id="top">
-    <section class="sheet sheet--about">
-      <h2>About</h2>
-      <div class="prose">
-        <p>Superimmersive Art is a 3D and immersive technology company based in George, Western Cape. The company earns export revenue by providing specialist 3D and software development services to an international client, and uses that income to fund the development of its own software products.</p>
-        <p>The long-term goal is to be a market leader in interactive design — realtime 3D, XR, and tools people can walk through and change, not only look at. Getting there means moving from a service business to a product business: recurring revenue through subscriptions, software licensing, and product sales, so the company can build South African IP, create skilled jobs, offer graduate internships, and reinvest in further development.</p>
+  <main>
+    <section class="prop prop--hero" id="top">
+      <div class="prop__grid" aria-hidden="true"></div>
+      <div class="prop__shell">
+        <p class="eyebrow">Superimmersive Art</p>
+        <h1 class="prop__h1">Immersive technology, 3D development and interactive experiences</h1>
+        <p class="prop__lede">A South African IT / 4IR company based in George, Western Cape, building immersive training, realtime 3D and interactive product work for education and industry.</p>
+        <div class="prop__actions">
+          <a class="prop-btn prop-btn--primary" href="#work">View Showcase</a>
+          <a class="prop-btn prop-btn--ghost" href="#products">View Products</a>
+        </div>
+
+        <div class="prop-hero__panel">
+          <div class="prop-media prop-media--hero prop-media--ticks">
+            <video
+              muted
+              playsinline
+              preload="auto"
+              aria-label="Craniotomy Training Demo"
+              data-playlist="assets/hero/Craniotomy%20Pasthough.webm|assets/hero/Craniotomy%20Vr.webm"
+            ></video>
+          </div>
+          <div class="prop-panel__meta">
+            <p class="eyebrow eyebrow--plain">Craniotomy Training Demo</p>
+            <div class="prop__actions" style="margin-top:0">
+              <a class="prop-btn prop-btn--ghost prop-btn--sm" href="https://drive.google.com/drive/folders/1dsGZLashUZFpkkGfQ9n4TtaHBhG6iniq?usp=drive_link" target="_blank" rel="noopener noreferrer">Meta Quest APK</a>
+              <a class="prop-btn prop-btn--ghost prop-btn--sm" href="https://superimmersive.github.io/craniotomy-exercise/" target="_blank" rel="noopener noreferrer">Try On Web</a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="sheet">
-      <h2>Who we are</h2>
-      <div class="prose">
-        <p>Superimmersive Art was founded and is led by <strong>Devon Gray Kirchner</strong>, a technical artist and software developer with over 11 years of professional experience across Unity, Blender, Autodesk 3ds Max, Autodesk Maya, virtual and augmented reality, video production, and realtime interactive web technologies.</p>
-        <p>The company’s current income comes from 3D and technical art services delivered to an International Client for their VR and immersive training pipelines. Alongside that, the founder develops the company’s own products in-house. Full product detail is on each product page.</p>
+    <section class="prop" id="about">
+      <div class="prop__shell">
+        <p class="eyebrow">The company</p>
+        <h2>About Superimmersive</h2>
+        <div class="prop-about" style="margin-top:3rem">
+          <aside class="prop-about__profile">
+            <div class="prop-card prop-profile">
+              <div class="prop-media prop-profile__photo">
+                <img src="assets/founder/devon-kirchner-blue-grad-01.png?v=10" alt="Devon Gray Kirchner, Founder &amp; Director">
+              </div>
+              <div class="prop-profile__copy">
+                <p class="prop-profile__name">Devon Gray Kirchner</p>
+                <p class="prop-profile__role">Founder &amp; Director</p>
+                <p class="prop-profile__label">Capabilities</p>
+                <ul class="prop-chips">
+                  <li>Technical Art</li>
+                  <li>3D Development</li>
+                  <li>VR / AR</li>
+                  <li>Software</li>
+                  <li>Interactive Training</li>
+                  <li>Immersive Technology</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+
+          <div class="prop-copy">
+            <div class="prop-copy__stack">
+              <p class="prop__lede">Superimmersive is a South African IT/4IR startup specialising in immersive technology, 3D development and interactive training experiences.</p>
+              <p class="prop__body">The company is Black-owned and youth-owned, with the founder born in 1992.</p>
+              <p class="prop__body">The founder and director has 11+ years of professional industry experience across technical art, 3D development, software and immersive technology, with experience working with major organisations and international clients.</p>
+              <div class="prop-tags">
+                <span>Black-owned and youth-owned</span>
+                <span>11+ years professional industry experience</span>
+                <span>George, Western Cape</span>
+              </div>
+            </div>
+
+            <div>
+              <p class="eyebrow">Direction</p>
+              <h3>Our Mission</h3>
+              <div class="prop-mission" style="margin-top:1.5rem">
+                <p>Superimmersive's long-term mission is to become an industry leader in immersive technology and immersive training tools, providing South African educational institutions with access to high-quality, industry-standard immersive training experiences.</p>
+                <p>Our goal is to help equip learners with practical industry knowledge and familiarity with complex equipment, processes and environments before they enter real-world facilities.</p>
+                <p>We aim to contribute to the growth of South Africa's technology sector through locally owned intellectual property, employment opportunities and connections between South African technical skills and international markets.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="sheet">
-      <h2>Client work</h2>
-      <p class="note" style="margin: -1.5rem 0 2.5rem; max-width: 38rem;">Delivered through studio engagements</p>
-      <dl class="clients">
-        <div>
-          <dt>Anglo American</dt>
-          <dd>Digital training tool for mining operations and safety</dd>
-        </div>
-        <div>
-          <dt>Aston Martin</dt>
-          <dd>Digital twin of the Valhalla hypercar; visual training on high-voltage battery assembly</dd>
-        </div>
-        <div>
-          <dt>Nissan</dt>
-          <dd>Digital twins of the Magnite and Navara; virtual showroom; marketing videos</dd>
-        </div>
-        <div>
-          <dt>Absa</dt>
-          <dd>Digital twin of ATM machines, used as a training tool</dd>
-        </div>
-        <div>
-          <dt>University of Johannesburg</dt>
-          <dd>Digital mascot and campus guidance tool</dd>
-        </div>
-        <div>
-          <dt>Sasol</dt>
-          <dd>Character mascots and digital training tools</dd>
-        </div>
-        <div>
-          <dt>Nestlé</dt>
-          <dd>AR activation for a newly launched milk product</dd>
-        </div>
-        <div>
-          <dt>SANRAL</dt>
-          <dd>Digital flythroughs of intersections; digital recreation of the Huguenot Tunnel</dd>
-        </div>
-        <div>
-          <dt>The Blair Project</dt>
-          <dd>Training on converting a petrol go-kart to electric using their assembly kit</dd>
-        </div>
-        <div>
-          <dt>Investec</dt>
-          <dd>Digital avatar</dd>
-        </div>
-        <div>
-          <dt>Netbank</dt>
-          <dd>Roblox game teaching children how to run a business</dd>
-        </div>
-        <div>
-          <dt>Thule</dt>
-          <dd>Digital twin of bicycle racks and vehicle accessories</dd>
-        </div>
-        <div>
-          <dt>Network Rail</dt>
-          <dd>AR gallery of operational trains and museum pieces; railway safety training tool</dd>
-        </div>
-        <div>
-          <dt>Transnet</dt>
-          <dd>Digital twin of a hub motor</dd>
-        </div>
-        <div>
-          <dt>HP</dt>
-          <dd>AR activation for a printed cereal box</dd>
-        </div>
-        <div>
-          <dt>Carberry</dt>
-          <dd>Martian characters animated on chocolate wrappers</dd>
-        </div>
-        <div>
-          <dt>Hasbro</dt>
-          <dd>AR game</dd>
-        </div>
-        <div>
-          <dt>HRUC</dt>
-          <dd>VR training simulations — fire safety, wiring a plug, road safety, changing a tyre</dd>
-        </div>
-        <div>
-          <dt>Capel Manor College</dt>
-          <dd>Training tools for farming, bushcraft, and hydrogen production modules</dd>
-        </div>
-        <div>
-          <dt>Roche Diagnostic Solutions</dt>
-          <dd>Digital twins of diagnostic machines</dd>
-        </div>
-        <div>
-          <dt>Game South Africa</dt>
-          <dd>AR appliances</dd>
-        </div>
-        <div>
-          <dt>Weylandts</dt>
-          <dd>AR furniture</dd>
-        </div>
-        <div>
-          <dt>Other</dt>
-          <dd>Smaller brands and agency work</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="sheet">
+    <section class="sheet" id="history">
       <h2>Founder history</h2>
       <ol class="timeline">
         <li><span>2010 – 2014</span> Formal training in animation and digital art</li>
@@ -146,6 +117,142 @@
         <li><span>2021 – 2026</span> Contract work for The Pulse Rooms, Seamonster, and Fuzzy Logic Studio (UK)</li>
         <li><span>Feb 2025</span> Registered Superimmersive Art (Pty) Ltd to formalise the contracting work and building the company’s product IP</li>
       </ol>
+    </section>
+
+    <section class="prop" id="industry">
+      <div class="prop__shell">
+        <p class="eyebrow">Track record</p>
+        <h2>Industry Experience</h2>
+        <p class="prop__lede">11+ years of professional experience across technical art, 3D development, software and immersive technology.</p>
+        <ul class="prop-logos">
+          <li><span class="prop-logos__frame"><img src="assets/logos/absa.png" alt="Absa"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/anglo-american.png" alt="Anglo American" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/aston-martin.png" alt="Aston Martin"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/protoev.png" alt="Blair Project / ProtoEV"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/budweiser.png" alt="Budweiser"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/cadbury.png" alt="Cadbury"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/capel-manor.png" alt="Capel Manor College"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/catapult-energy-systems.png" alt="Catapult Energy Systems"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/coventry-university.png" alt="Coventry University"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/darlington-libraries.png" alt="Darlington Libraries"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/game-south-africa.png" alt="Game South Africa"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/hasbro.png" alt="Hasbro"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/hp.png" alt="HP"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/hruc.png" alt="HRUC" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/investec.png" alt="Investec"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/john-walker.png" alt="Johnnie Walker"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/network-rail.png" alt="Network Rail"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/nedbank.png" alt="Nedbank"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/nestle.png" alt="Nestlé" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/nissan.png" alt="Nissan" class="prop-logos--invert"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/northern-engineering-solutions.png" alt="Northern Engineering Solutions" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/roche.png" alt="Roche Diagnostic Solutions" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/sanral.png" alt="SANRAL"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/sasol.png" alt="Sasol" class="prop-logos--bright"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/thule.png" alt="Thule" class="prop-logos--invert"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/transnet.png" alt="Transnet"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/tyne-coast.png" alt="Tyne Coast College"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/unido.png" alt="UNIDO"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/university-of-johannesburg.png" alt="University of Johannesburg"></span></li>
+          <li><span class="prop-logos__frame"><img src="assets/logos/weylandts.png" alt="Weylandts"></span></li>
+        </ul>
+        <p class="prop-note">Selected organisations associated with previous professional work.</p>
+        <p class="prop-disclaimer">This work was delivered across studio engagements and contract roles over an 11-year career. It is not a claim that each organisation listed is a direct Superimmersive client.</p>
+      </div>
+    </section>
+
+    <section class="prop" id="work">
+      <div class="prop__shell">
+        <p class="eyebrow">Capability</p>
+        <h2>Showcase</h2>
+        <p class="prop__lede">Superimmersive combines technical art, 3D development, software and immersive technology to create interactive experiences for training, education and industry.</p>
+        <ul class="prop-showcase">
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Immersive Training Solutions" data-playlist="assets/showcase/immersive-training-solutions/Firesafety.webm|assets/showcase/immersive-training-solutions/Vehicleinspection.webm"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Immersive Training Solutions</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Immersive Training Solutions</h3>
+                <p>Immersive training and simulation environments.</p>
+              </div>
+              <span class="prop-showcase__n">01</span>
+            </div>
+          </li>
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Interactive Products" data-playlist="assets/showcase/interactive-products/Liebherr.webm|assets/showcase/interactive-products/Transnet.webm"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Interactive Products</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Interactive Products</h3>
+                <p>Interactive 3D applications and digital experiences.</p>
+              </div>
+              <span class="prop-showcase__n">02</span>
+            </div>
+          </li>
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Simulated Environments" data-playlist="assets/showcase/simulated-environments/Minepit.webm"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Simulated Environments</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Simulated Environments</h3>
+                <p>Simulated environments for training and visualisation.</p>
+              </div>
+              <span class="prop-showcase__n">03</span>
+            </div>
+          </li>
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Video Productions" data-playlist="assets/showcase/video-productions/Nesl%20Flythrough.webm"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Video Productions</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Video Productions</h3>
+                <p>Video production for training, demonstration and presentation.</p>
+              </div>
+              <span class="prop-showcase__n">04</span>
+            </div>
+          </li>
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Interactive Games" data-playlist="assets/showcase/interactive-games/TDAR_Racing_Vid03Small.mp4"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Interactive Games</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Interactive Games</h3>
+                <p>Interactive games and playable digital experiences.</p>
+              </div>
+              <span class="prop-showcase__n">05</span>
+            </div>
+          </li>
+          <li class="prop-card prop-card--hover">
+            <div class="prop-media prop-media--ticks">
+              <video muted playsinline preload="auto" aria-label="Digital Avatars" data-playlist="assets/showcase/digital-avatars/Clipboard.mp4|assets/showcase/digital-avatars/NestleCremoraScanPackAR.mp4|assets/showcase/digital-avatars/RabitAnim.mp4|assets/showcase/digital-avatars/ShowRight.mp4"></video>
+              <div class="prop-media__wash"></div>
+              <div class="prop-media__label"><i class="prop-media__rule"></i><span>Digital Avatars</span></div>
+            </div>
+            <div class="prop-showcase__cap">
+              <div>
+                <h3>Digital Avatars</h3>
+                <p>Digital characters and avatar systems.</p>
+              </div>
+              <span class="prop-showcase__n">06</span>
+            </div>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <section class="sheet products" id="products">

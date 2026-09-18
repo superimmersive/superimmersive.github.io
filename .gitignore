@@ -3,6 +3,7 @@ node_modules/
 *.local
 .env
 .env.*
+__pycache__/
 
 # Over GitHub's 100 MB limit — site uses compressed homes-01/02
 assets/products/homes-demos/SIH_SR_*.mp4
@@ -23,3 +24,6 @@ assets/services/interactive-web-demos/Rotating jet engine.glb
 
 # Desktop capture originals — site uses session-01.mp4
 assets/products/schoollink-demos/Desktop*.mp4
+
+# Pre-compress client videos (local backup only)
+assets/clients/_originals/

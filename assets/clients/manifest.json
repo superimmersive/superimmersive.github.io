@@ -1,0 +1,527 @@
+{
+  "absa": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "06.png",
+      "kind": "image"
+    },
+    {
+      "file": "08.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "09.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "10.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "11.jpg",
+      "kind": "image"
+    }
+  ],
+  "anglo-american": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "com.oculus.xrstreamingclient-20240514-232848.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "Kumba VR - Experience Start.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "Kumba VR Location 3.mp4",
+      "kind": "video"
+    }
+  ],
+  "aston-martin": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    }
+  ],
+  "blair-project": [
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "Showroom_V1.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "Tools.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "TunAround_Kart01_Default.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "UnityShadersProtoEV.mp4",
+      "kind": "video"
+    }
+  ],
+  "capel-manor": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "06.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "07.png",
+      "kind": "image"
+    },
+    {
+      "file": "08.png",
+      "kind": "image"
+    },
+    {
+      "file": "09.png",
+      "kind": "image"
+    },
+    {
+      "file": "10.jpg",
+      "kind": "image"
+    }
+  ],
+  "carberry": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "446228.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "Martians-Cadbury.jpeg",
+      "kind": "image"
+    },
+    {
+      "file": "pappy-onwuagbu-artboard-2-copy-8.jpg",
+      "kind": "image"
+    }
+  ],
+  "coventry-university": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    }
+  ],
+  "game-south-africa": [],
+  "hasbro": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    }
+  ],
+  "hp": [],
+  "hruc": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    }
+  ],
+  "investec": [],
+  "nestle": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    }
+  ],
+  "netbank": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    }
+  ],
+  "network-rail": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    }
+  ],
+  "nissan": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    }
+  ],
+  "other": [],
+  "roche": [],
+  "sanral": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "HuguenotTunnel_FinalWithMusicTextAtTop.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "Karinointerchange_NoSound.mp4",
+      "kind": "video"
+    },
+    {
+      "file": "MusinaRingRoad_NoMusic.mp4",
+      "kind": "video"
+    }
+  ],
+  "sasol": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.png",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    },
+    {
+      "file": "External_Sam_AR_download doc.png",
+      "kind": "image"
+    },
+    {
+      "file": "Internal_Sasol molecule AR_placed.png",
+      "kind": "image"
+    },
+    {
+      "file": "Internal_Soar_AR_Animation and VO \u2013 1.png",
+      "kind": "image"
+    }
+  ],
+  "thule": [
+    {
+      "file": "01.png",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.jpg",
+      "kind": "image"
+    }
+  ],
+  "transnet": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.png",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    }
+  ],
+  "tyne-coast": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "03.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "04.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "05.png",
+      "kind": "image"
+    },
+    {
+      "file": "Screenshot_60.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "Screenshot_62.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "Screenshot_63.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "Screenshot_81.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "untitled02.png",
+      "kind": "image"
+    },
+    {
+      "file": "untitled.png",
+      "kind": "image"
+    }
+  ],
+  "university-of-johannesburg": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.png",
+      "kind": "image"
+    },
+    {
+      "file": "gif_idle_noShadow.gif",
+      "kind": "image"
+    },
+    {
+      "file": "gif_typingIdle_noShadow.gif",
+      "kind": "image"
+    },
+    {
+      "file": "iPad 6th Gen 2048 x 2732px_0000s_0001_Group 2.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "Mouji_Graduated.png",
+      "kind": "image"
+    }
+  ],
+  "weylandts": [
+    {
+      "file": "01.jpg",
+      "kind": "image"
+    },
+    {
+      "file": "02.jpg",
+      "kind": "image"
+    }
+  ]
+}
