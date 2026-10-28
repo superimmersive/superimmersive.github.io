@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>View in AR — Superimmersive</title>
+  <meta name="description" content="View this product in augmented reality.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+           background: #07101c; color: #f8fafc; font-family: Inter, system-ui, sans-serif; text-align: center; padding: 32px 20px; }
+    .logo { width: min(260px, 70vw); height: auto; margin-bottom: 40px; }
+    h1 { font-family: "Space Grotesk", system-ui, sans-serif; font-weight: 600; font-size: clamp(28px, 7vw, 40px); margin: 0 0 12px; }
+    p { color: #94a3b8; font-size: 17px; line-height: 1.5; max-width: 440px; margin: 0 auto 28px; }
+    .btn { display: inline-block; padding: 14px 26px; border-radius: 999px; background: #72ed6b; color: #07101c;
+           font-weight: 500; text-decoration: none; font-size: 16px; }
+    .btn[hidden] { display: none; }
+    .back { margin-top: 36px; color: #8b93a3; font-size: 14px; }
+    .back a { color: #f8fafc; }
+  </style>
+</head>
+<body>
+  <a href="https://superimmersive.io/"><img class="logo" src="/assets/logo-saturn.png" alt="Superimmersive"></a>
+  <h1>View in AR</h1>
+  <p id="msg">Open this link on an iPhone or iPad to place the product in your room at real size.</p>
+  <a class="btn" id="ar" rel="ar" href="#" hidden><img alt="" style="display:none">View in AR</a>
+  <div class="back">Made by <a href="https://superimmersive.io/">Superimmersive</a></div>
+  <script>
+    (function () {
+      var id = new URLSearchParams(location.search).get("model") || "test-box";
+      if (!/^[A-Za-z0-9_-]{1,80}$/.test(id)) return;
+      var a = document.getElementById("ar");
+      a.href = "/ar/models/" + id + ".usdz";
+      var test = document.createElement("a");
+      if (test.relList && test.relList.supports && test.relList.supports("ar")) {
+        a.hidden = false;
+        document.getElementById("msg").textContent = "Tap below to place the product in your room at real size.";
+      }
+    })();
+  </script>
+</body>
+</html>
