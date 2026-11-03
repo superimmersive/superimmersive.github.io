@@ -29,6 +29,7 @@
     "url": "https://superimmersive.io/models/axel-flux-motor.usdz",
     "sizeBytes": 8137433,
     "placement": "floor",
-    "animated": true
+    "animated": true,
+    "animationMode": "scrub"
   }
 ]
