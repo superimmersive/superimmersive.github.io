@@ -1,0 +1,26 @@
+[
+  {
+    "id": "test-box",
+    "name": "Test Box",
+    "bundled": true,
+    "sizeBytes": 2690,
+    "placement": "floor",
+    "animated": false
+  },
+  {
+    "id": "biplane",
+    "name": "Biplane",
+    "url": "https://superimmersive.io/models/biplane.usdz",
+    "sizeBytes": 11467255,
+    "placement": "floor",
+    "animated": true
+  },
+  {
+    "id": "robot",
+    "name": "Robot",
+    "url": "https://superimmersive.io/models/robot.usdz",
+    "sizeBytes": 12332482,
+    "placement": "floor",
+    "animated": true
+  }
+]
