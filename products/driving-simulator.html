@@ -12,7 +12,7 @@
   <meta property="og:title" content="VR Driving-School Simulator — Superimmersive Art">
   <meta property="og:description" content="A virtual driving simulator built around South African driving standards and the K53 testing framework.">
   <meta property="og:url" content="https://superimmersive.io/products/driving-simulator.html">
-  <meta property="og:image" content="https://superimmersive.io/assets/products/driving.png">
+  <meta property="og:image" content="https://superimmersive.io/assets/products/driving.jpg">
   <meta property="og:image:width" content="1536">
   <meta property="og:image:height" content="1024">
   <meta property="og:image:alt" content="VR Driving-School Simulator — Superimmersive Art">
@@ -29,6 +29,7 @@
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="../index.html">Home</a>
+      <a href="../work/index.html">Work</a>
       <a href="../services/xr-ar-webar.html">XR &amp; WebAR</a>
       <a href="../services/immersive-training.html">Training</a>
       <a href="../services/3d-interactive.html">3D</a>
@@ -38,7 +39,7 @@
   </header>
   <main id="top">
     <section class="hero hero--product">
-      <img class="hero__still" src="../assets/products/driving.png" alt="" width="1600" height="900">
+      <img class="hero__still" src="../assets/products/driving.jpg" alt="" width="1600" height="900">
       <div class="hero__copy">
         <p class="kicker">Licensed product + SaaS analytics</p>
         <h1>VR Driving-School Simulator</h1>
@@ -97,18 +98,31 @@
       </div>
     </section>
 
-    <section class="sheet contact">
-      <address>
-        <a href="mailto:devon@superimmersive.io">devon@superimmersive.io</a>
-        <a href="tel:+27685943568">068 594 3568</a>
-        <span>Superimmersive Art (Pty) Ltd · George, Western Cape</span>
-      </address>
+        <section class="sheet ask" id="contact">
+      <h2>Start a project</h2>
+      <p class="ask__lede">One ask: tell Devon what you want built. Sending opens an email to devon@superimmersive.io. Nothing is stored on this site.</p>
+      <!-- Formspree: set action to https://formspree.io/f/YOUR_FORM_ID. js/main.js submits to Formspree when the host matches, and otherwise builds the mailto. See docs/measurement.md. -->
+      <form class="ask__form" action="mailto:devon@superimmersive.io" method="post" data-ask data-subject="Training project — Superimmersive">
+        <input type="hidden" name="_subject" value="Training project — Superimmersive">
+        <label>Name
+          <input name="name" type="text" required autocomplete="name" maxlength="120">
+        </label>
+        <label>Email
+          <input name="email" type="email" required autocomplete="email" maxlength="200">
+        </label>
+        <label>What do you need?
+          <textarea name="message" required rows="5" maxlength="4000"></textarea>
+        </label>
+        <button class="prop-btn prop-btn--primary" type="submit">Email Devon</button>
+      </form>
+      <p class="ask__fine">Superimmersive Art (Pty) Ltd · George, Western Cape · <a href="tel:+27685943568">068 594 3568</a></p>
       <nav class="pager" aria-label="Products">
         <a href="3d-print.html">← 3D print</a>
         <a href="vr-training.html">VR training →</a>
       </nav>
     </section>
   </main>
+  <script src="../js/measure.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

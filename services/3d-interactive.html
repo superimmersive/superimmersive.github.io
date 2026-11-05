@@ -12,7 +12,7 @@
   <meta property="og:title" content="3D and Interactive Web in South Africa | Superimmersive">
   <meta property="og:description" content="Realtime 3D, technical art, and interactive web from Superimmersive Art in George. Assets for VR, product viewers, and browser-based 3D.">
   <meta property="og:url" content="https://superimmersive.io/services/3d-interactive.html">
-  <meta property="og:image" content="https://superimmersive.io/assets/services/interactive-web.png">
+  <meta property="og:image" content="https://superimmersive.io/assets/services/interactive-web.jpg">
   <meta property="og:image:width" content="1536">
   <meta property="og:image:height" content="1024">
   <meta property="og:image:alt" content="3D product configurator in a web browser on a curved monitor">
@@ -29,6 +29,7 @@
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="../index.html">Home</a>
+      <a href="../work/index.html">Work</a>
       <a href="xr-ar-webar.html">XR &amp; WebAR</a>
       <a href="immersive-training.html">Training</a>
       <a href="3d-interactive.html" aria-current="page">3D</a>
@@ -38,7 +39,7 @@
   </header>
   <main id="top">
     <section class="hero hero--product">
-      <img class="hero__still" src="../assets/services/interactive-web.png" alt="" width="1600" height="900">
+      <img class="hero__still" src="../assets/services/interactive-web.jpg" alt="" width="1600" height="900">
       <div class="hero__copy">
         <p class="kicker">Service · Realtime 3D</p>
         <h1>3D, technical art and interactive web</h1>
@@ -104,23 +105,36 @@
         <li><a href="interactive-web.html">Interactive web</a></li>
         <li><a href="xr-ar-webar.html">XR and WebAR</a></li>
         <li><a href="immersive-training.html">Immersive training</a></li>
+        <li><a href="digital-twin.html">Digital twin and QR-linked 3D</a></li>
+        <li><a href="../work/interactive-3d.html">Interactive 3D case note</a></li>
       </ul>
     </section>
 
-    <section class="sheet contact">
-      <h2>Contact</h2>
-      <address>
-        <a href="mailto:devon@superimmersive.io">devon@superimmersive.io</a>
-        <a href="tel:+27685943568">068 594 3568</a>
-        <span>Devon Gray Kirchner · Director</span>
-        <span>Superimmersive Art (Pty) Ltd · George, Western Cape</span>
-      </address>
+        <section class="sheet ask" id="contact">
+      <h2>Start a project</h2>
+      <p class="ask__lede">One ask: tell Devon what you want built. Sending opens an email to devon@superimmersive.io. Nothing is stored on this site.</p>
+      <!-- Formspree: set action to https://formspree.io/f/YOUR_FORM_ID. js/main.js submits to Formspree when the host matches, and otherwise builds the mailto. See docs/measurement.md. -->
+      <form class="ask__form" action="mailto:devon@superimmersive.io" method="post" data-ask data-subject="3D project — Superimmersive">
+        <input type="hidden" name="_subject" value="3D project — Superimmersive">
+        <label>Name
+          <input name="name" type="text" required autocomplete="name" maxlength="120">
+        </label>
+        <label>Email
+          <input name="email" type="email" required autocomplete="email" maxlength="200">
+        </label>
+        <label>What do you need?
+          <textarea name="message" required rows="5" maxlength="4000"></textarea>
+        </label>
+        <button class="prop-btn prop-btn--primary" type="submit">Email Devon</button>
+      </form>
+      <p class="ask__fine">Superimmersive Art (Pty) Ltd · George, Western Cape · <a href="tel:+27685943568">068 594 3568</a></p>
       <nav class="pager" aria-label="Services">
         <a href="immersive-training.html">← Immersive training</a>
         <a href="site-capture.html">Site capture →</a>
       </nav>
     </section>
   </main>
+  <script src="../js/measure.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
