@@ -105,7 +105,7 @@ h1, h2, h3, strong {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 400;
-  max-width: 58vw;
+  max-width: min(58rem, 68vw);
   padding-top: 6px;
 }
 
@@ -1249,6 +1249,9 @@ body.is-lightbox-open {
 
 .trio h3 { font-size: 1.25rem; margin-bottom: 12px; }
 .trio p { margin: 0; color: var(--ink-soft); }
+.trio a:hover { box-shadow: inset 0 -1px 0 var(--ink); }
+
+.services .trio { margin-bottom: 0.5rem; }
 
 /* ---------- work ---------- */
 .clients {
@@ -1835,7 +1838,7 @@ address span {
 
 @media (max-width: 800px) {
   .chrome { padding: 18px var(--gutter); }
-  .nav { gap: 0.65rem 1rem; font-size: 10px; max-width: 54vw; }
+  .nav { gap: 0.55rem 0.85rem; font-size: 10px; max-width: min(18rem, 68vw); }
   .catalog { grid-template-columns: 1fr; gap: 2rem; }
   .trio,
   .clients { grid-template-columns: 1fr; }
@@ -2384,6 +2387,7 @@ html { scroll-padding-top: 5.5rem; }
 }
 
 @media (max-width: 800px) {
+  .prop--hero { padding-top: clamp(11rem, 30vh, 15rem); }
   .prop-btn { white-space: normal; text-align: center; }
 }
 

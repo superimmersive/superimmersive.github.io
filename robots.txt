@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# App and utility routes. Marketing pages stay crawlable.
+# Model files under /models/ stay allowed for the AR app and App Clip.
+Disallow: /ar/
+Disallow: /tools/
+Disallow: /privacy/
+
+Sitemap: https://superimmersive.io/sitemap.xml
