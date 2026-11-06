@@ -1,0 +1,28 @@
+{
+  "name": "Robot",
+  "dimensions": "Height 1.6 m \u00b7 Width 0.7 m \u00b7 Depth 0.55 m (display scale)",
+  "details": "Vintage-style biped robot for AR demos. Tap to play the baked idle animation.",
+  "specText": "MOCK SPEC \u2014 for Ask chat testing only. Superimmersive demo Robot. Standing height 1.6 m, width 0.7 m, depth 0.55 m at display scale. Metal chassis with riveted panels, dual optic sensors, articulated arms and legs. Finish: weathered steel with brass accents. Power (fictional): 48 V onboard pack, ~4 h idle demo runtime. Animation: looped idle. Indoor AR demos only. SKU: SI-DEMO-ROBOT.",
+  "faq": [
+    {
+      "question": "How tall is it?",
+      "answer": "1.6 m at the baked display scale."
+    },
+    {
+      "question": "Does it walk on its own?",
+      "answer": "No. Motion is a baked animation in the USDZ for AR demos."
+    },
+    {
+      "question": "What is it made of?",
+      "answer": "Fictional weathered steel chassis with brass accents."
+    },
+    {
+      "question": "How long does the battery last?",
+      "answer": "About 4 hours in this mock idle-demo rating."
+    },
+    {
+      "question": "Is this a real product?",
+      "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+    }
+  ]
+}

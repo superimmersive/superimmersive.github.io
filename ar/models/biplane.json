@@ -1,0 +1,28 @@
+{
+  "name": "Biplane",
+  "dimensions": "Wingspan 1.2 m \u00b7 Length 0.9 m \u00b7 Height 0.35 m (display scale)",
+  "details": "Classic twin-wing display aircraft for AR demos. Tap to play the baked fly animation.",
+  "specText": "MOCK SPEC \u2014 for Ask chat testing only. Superimmersive demo Biplane. Wingspan 1.2 m, length 0.9 m, height 0.35 m at the baked display scale. Dual fabric-covered wings, open cockpit, fixed undercarriage. Finish: cream fuselage with red wing tips. Intended for indoor AR product demos; not a flying model. Animation: looped takeoff/fly cycle. SKU: SI-DEMO-BIPLANE.",
+  "faq": [
+    {
+      "question": "Does it fly in real life?",
+      "answer": "No. This is a display / AR demo model only."
+    },
+    {
+      "question": "What is the wingspan?",
+      "answer": "1.2 m at the baked display scale."
+    },
+    {
+      "question": "Is there an animation?",
+      "answer": "Yes \u2014 tap the model to play or pause the baked fly loop."
+    },
+    {
+      "question": "What colours is it?",
+      "answer": "Cream fuselage with red wing tips."
+    },
+    {
+      "question": "Is this a real product?",
+      "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+    }
+  ]
+}

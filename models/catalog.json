@@ -5,7 +5,31 @@
     "bundled": true,
     "sizeBytes": 2690,
     "placement": "floor",
-    "animated": false
+    "animated": false,
+    "specText": "MOCK SPEC \u2014 for Ask chat testing only. Test Box is a 450 mm cube (W\u00d7D\u00d7H) with a matte neutral-grey finish. Weight: 2.4 kg. Material: painted MDF. Indoor use only. Scale reference, not a toy. SKU: SI-TEST-450.",
+    "faq": [
+      {
+        "question": "What colour is it?",
+        "answer": "Neutral grey."
+      },
+      {
+        "question": "What is it made of?",
+        "answer": "Painted MDF with a matte finish."
+      },
+      {
+        "question": "How much does it weigh?",
+        "answer": "2.4 kg."
+      },
+      {
+        "question": "Can I use it outdoors?",
+        "answer": "No. Indoor use only."
+      },
+      {
+        "question": "Is this a real product?",
+        "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+      }
+    ],
+    "dimensions": "450 \u00d7 450 \u00d7 450 mm"
   },
   {
     "id": "biplane",
@@ -13,7 +37,31 @@
     "url": "https://superimmersive.io/models/biplane.usdz",
     "sizeBytes": 11467255,
     "placement": "floor",
-    "animated": true
+    "animated": true,
+    "specText": "MOCK SPEC \u2014 for Ask chat testing only. Superimmersive demo Biplane. Wingspan 1.2 m, length 0.9 m, height 0.35 m at the baked display scale. Dual fabric-covered wings, open cockpit, fixed undercarriage. Finish: cream fuselage with red wing tips. Intended for indoor AR product demos; not a flying model. Animation: looped takeoff/fly cycle. SKU: SI-DEMO-BIPLANE.",
+    "faq": [
+      {
+        "question": "Does it fly in real life?",
+        "answer": "No. This is a display / AR demo model only."
+      },
+      {
+        "question": "What is the wingspan?",
+        "answer": "1.2 m at the baked display scale."
+      },
+      {
+        "question": "Is there an animation?",
+        "answer": "Yes \u2014 tap the model to play or pause the baked fly loop."
+      },
+      {
+        "question": "What colours is it?",
+        "answer": "Cream fuselage with red wing tips."
+      },
+      {
+        "question": "Is this a real product?",
+        "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+      }
+    ],
+    "dimensions": "Wingspan 1.2 m \u00b7 Length 0.9 m \u00b7 Height 0.35 m (display scale)"
   },
   {
     "id": "robot",
@@ -21,7 +69,31 @@
     "url": "https://superimmersive.io/models/robot.usdz",
     "sizeBytes": 12332482,
     "placement": "floor",
-    "animated": true
+    "animated": true,
+    "specText": "MOCK SPEC \u2014 for Ask chat testing only. Superimmersive demo Robot. Standing height 1.6 m, width 0.7 m, depth 0.55 m at display scale. Metal chassis with riveted panels, dual optic sensors, articulated arms and legs. Finish: weathered steel with brass accents. Power (fictional): 48 V onboard pack, ~4 h idle demo runtime. Animation: looped idle. Indoor AR demos only. SKU: SI-DEMO-ROBOT.",
+    "faq": [
+      {
+        "question": "How tall is it?",
+        "answer": "1.6 m at the baked display scale."
+      },
+      {
+        "question": "Does it walk on its own?",
+        "answer": "No. Motion is a baked animation in the USDZ for AR demos."
+      },
+      {
+        "question": "What is it made of?",
+        "answer": "Fictional weathered steel chassis with brass accents."
+      },
+      {
+        "question": "How long does the battery last?",
+        "answer": "About 4 hours in this mock idle-demo rating."
+      },
+      {
+        "question": "Is this a real product?",
+        "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+      }
+    ],
+    "dimensions": "Height 1.6 m \u00b7 Width 0.7 m \u00b7 Depth 0.55 m (display scale)"
   },
   {
     "id": "axel-flux-motor",
@@ -30,6 +102,34 @@
     "sizeBytes": 8137433,
     "placement": "floor",
     "animated": true,
-    "animationMode": "scrub"
+    "animationMode": "scrub",
+    "specText": "MOCK SPEC \u2014 for Ask chat testing only. Axel Flux Motor \u2014 demo in-wheel / hub traction motor. Outer diameter ~420 mm, axial length ~310 mm. Peak torque (fictional): 850 N\u00b7m. Continuous power: 75 kW. Nominal voltage: 400 V DC. Cooling: liquid jacket. Protection: IP67. Mass: 28 kg. Parts (scrub view): housing, stator, rotor, magnets, bearings, seals, hub flange. Animation mode: scrub (slider), not loop. SKU: SI-DEMO-AXEL-FLUX.",
+    "faq": [
+      {
+        "question": "What is the peak torque?",
+        "answer": "850 N\u00b7m in this mock datasheet."
+      },
+      {
+        "question": "What voltage does it use?",
+        "answer": "400 V DC nominal."
+      },
+      {
+        "question": "Is it waterproof?",
+        "answer": "Rated IP67 in this mock spec."
+      },
+      {
+        "question": "How do I see the exploded parts?",
+        "answer": "Use the on-screen scrub slider; tap a part to highlight and name it."
+      },
+      {
+        "question": "How much does it weigh?",
+        "answer": "28 kg in this mock datasheet."
+      },
+      {
+        "question": "Is this a real product?",
+        "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+      }
+    ],
+    "dimensions": "\u00d8 420 mm \u00b7 Length 310 mm (approx. display scale)"
   }
 ]

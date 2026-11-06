@@ -1,0 +1,32 @@
+{
+  "name": "Axel Flux Motor",
+  "dimensions": "\u00d8 420 mm \u00b7 Length 310 mm (approx. display scale)",
+  "details": "Exploded-view wheel hub motor for industrial AR. Use the scrub slider to expand parts.",
+  "specText": "MOCK SPEC \u2014 for Ask chat testing only. Axel Flux Motor \u2014 demo in-wheel / hub traction motor. Outer diameter ~420 mm, axial length ~310 mm. Peak torque (fictional): 850 N\u00b7m. Continuous power: 75 kW. Nominal voltage: 400 V DC. Cooling: liquid jacket. Protection: IP67. Mass: 28 kg. Parts (scrub view): housing, stator, rotor, magnets, bearings, seals, hub flange. Animation mode: scrub (slider), not loop. SKU: SI-DEMO-AXEL-FLUX.",
+  "faq": [
+    {
+      "question": "What is the peak torque?",
+      "answer": "850 N\u00b7m in this mock datasheet."
+    },
+    {
+      "question": "What voltage does it use?",
+      "answer": "400 V DC nominal."
+    },
+    {
+      "question": "Is it waterproof?",
+      "answer": "Rated IP67 in this mock spec."
+    },
+    {
+      "question": "How do I see the exploded parts?",
+      "answer": "Use the on-screen scrub slider; tap a part to highlight and name it."
+    },
+    {
+      "question": "How much does it weigh?",
+      "answer": "28 kg in this mock datasheet."
+    },
+    {
+      "question": "Is this a real product?",
+      "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+    }
+  ]
+}

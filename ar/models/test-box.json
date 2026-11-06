@@ -1,5 +1,28 @@
 {
   "name": "Test Box",
-  "dimensions": "450 × 450 × 450 mm",
-  "details": "Test model for the Superimmersive AR viewer"
+  "dimensions": "450 \u00d7 450 \u00d7 450 mm",
+  "details": "Neutral grey reference cube for checking scale, lighting, and placement.",
+  "specText": "MOCK SPEC \u2014 for Ask chat testing only. Test Box is a 450 mm cube (W\u00d7D\u00d7H) with a matte neutral-grey finish. Weight: 2.4 kg. Material: painted MDF. Indoor use only. Scale reference, not a toy. SKU: SI-TEST-450.",
+  "faq": [
+    {
+      "question": "What colour is it?",
+      "answer": "Neutral grey."
+    },
+    {
+      "question": "What is it made of?",
+      "answer": "Painted MDF with a matte finish."
+    },
+    {
+      "question": "How much does it weigh?",
+      "answer": "2.4 kg."
+    },
+    {
+      "question": "Can I use it outdoors?",
+      "answer": "No. Indoor use only."
+    },
+    {
+      "question": "Is this a real product?",
+      "answer": "No \u2014 this is mock data for testing the Ask chatbot."
+    }
+  ]
 }
