@@ -11,6 +11,8 @@ A name and a USDZ. Publish sends them to the private Cloudflare R2 bucket `super
 
 The id is the name, lowercased, with spaces turned into hyphens. Uploading the same name again replaces that model. `test-box`, `biplane`, `robot`, and `axel-flux-motor` are refused. A file over 70 MB is refused.
 
+After the file is stored, the page draws a QR code for `https://superimmersive.io/ar?model=<id>` and shows that link. The code launches the App Clip. It does not contain the USDZ.
+
 The browser posts the file to `https://superimmersive-intake.superimmersive.workers.dev`. That Worker holds the only permission to write the bucket. It accepts uploads from `superimmersive.io` and `superimmersive.github.io`.
 
 `/tools/` is disallowed in `robots.txt`. The page sends `noindex`.

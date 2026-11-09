@@ -113,6 +113,10 @@
     return (error && error.message) || "Something went wrong.";
   }
 
+  function launchUrl(id) {
+    return "https://superimmersive.io/ar?model=" + encodeURIComponent(id);
+  }
+
   function mount() {
     var form = document.getElementById("app");
     if (!form) return;
@@ -121,9 +125,36 @@
     var status = document.getElementById("status");
     var button = document.getElementById("publish");
 
+    var qrBlock = document.getElementById("qr");
+    var qrCanvas = document.getElementById("qr-canvas");
+    var qrLink = document.getElementById("qr-link");
+
     function setStatus(message, isError) {
       status.textContent = message || "";
       status.classList.toggle("error", Boolean(isError));
+    }
+
+    function hideCode() {
+      if (qrBlock) qrBlock.hidden = true;
+    }
+
+    function showCode(url) {
+      if (!qrBlock || !qrLink) return;
+      qrLink.href = url;
+      qrLink.textContent = url;
+      qrBlock.hidden = false;
+      var QR = globalThis.QRCode;
+      if (!qrCanvas || !QR || !QR.toCanvas) {
+        setStatus("Stored. The link is below; the QR code could not be drawn.", true);
+        return;
+      }
+      QR.toCanvas(qrCanvas, url, {
+        width: 220,
+        margin: 1,
+        color: { dark: "#020617", light: "#f8fafc" }
+      }, function (err) {
+        if (err) setStatus("Stored. The link is below; the QR code could not be drawn.", true);
+      });
     }
 
     form.addEventListener("submit", async function (event) {
@@ -143,13 +174,16 @@
         return;
       }
       button.disabled = true;
+      hideCode();
       try {
         var stored = await publishModel({
           name: nameInput.value,
           modelBytes: new Uint8Array(await file.arrayBuffer()),
           onStatus: setStatus
         });
+        var url = launchUrl(stored.id);
         setStatus("Stored as " + stored.id + ".");
+        showCode(url);
       } catch (error) {
         setStatus(friendly(error), true);
       } finally {
@@ -174,6 +208,7 @@
     sizeWarning: sizeWarning,
     formatBytes: formatBytes,
     publishModel: publishModel,
-    friendly: friendly
+    friendly: friendly,
+    launchUrl: launchUrl
   };
 });

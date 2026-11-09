@@ -15,7 +15,7 @@ test("the form is a name, a USDZ, and publish", () => {
   for (const gone of [
     "Unlock", "GitHub token", "Personal access token", "Load this id",
     "Thumbnail", "FAQ", "Placement", "Animated", "Share link", "Will be written",
-    "qrcode", "How to publish", "examples list", "api.github.com"
+    "How to publish", "examples list", "api.github.com"
   ]) {
     assert.equal(html.includes(gone), false, gone);
     assert.equal(js.includes(gone), false, gone);
@@ -23,6 +23,23 @@ test("the form is a name, a USDZ, and publish", () => {
   assert.equal(js.includes("GATE_SHA256"), false);
   assert.equal(js.includes("loadExisting"), false);
   assert.equal(api.UPLOAD_URL, "https://superimmersive-intake.superimmersive.workers.dev");
+  assert.match(html, /id="qr-canvas"/);
+  assert.match(html, /id="qr-link"/);
+  assert.match(html, /src="\.\.\/\.\.\/js\/qrcode\.min\.js"/);
+  assert.match(js, /toCanvas/);
+  assert.equal(api.launchUrl("garden-lamp"), "https://superimmersive.io/ar?model=garden-lamp");
+});
+
+test("the launch link is the App Clip address and the QR library can draw it", async () => {
+  const QRCode = require("../../js/qrcode.min.js");
+  const url = api.launchUrl("garden-lamp");
+  const created = QRCode.create(url);
+  const encoded = created.segments.map(function (segment) {
+    return typeof segment.data === "string" ? segment.data : Buffer.from(segment.data).toString("utf8");
+  }).join("");
+  assert.equal(encoded, url);
+  const svg = await QRCode.toString(url, { type: "svg", margin: 1 });
+  assert.match(svg, /<svg/);
 });
 
 test("a name becomes a private object key", () => {
