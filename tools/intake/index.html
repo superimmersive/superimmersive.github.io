@@ -3,268 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Studio intake — Superimmersive</title>
-  <meta name="description" content="Publish a USDZ model to the Superimmersive AR catalog.">
+  <title>Add a model — Superimmersive</title>
   <meta name="robots" content="noindex, nofollow">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      color-scheme: dark;
-      --shell: #020617;
-      --ink: #f8fafc;
-      --ink-soft: #94a3b8;
-      --lime: #72ed6b;
-      --hair: rgba(248, 250, 252, 0.14);
-      --accent: #7e9fc0;
-      --accent-soft: #9bb6d0;
-      --display: "Space Grotesk", sans-serif;
-      --body: "Outfit", sans-serif;
-    }
+    :root { color-scheme: dark; }
     * { box-sizing: border-box; }
-    html, body { margin: 0; background: var(--shell); color: var(--ink); }
     body {
-      font-family: var(--body);
-      font-weight: 300;
-      font-size: 16px;
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    ::selection { background: var(--lime); color: var(--shell); }
-    a { color: var(--ink); }
-    img { max-width: 100%; height: auto; }
-    [hidden] { display: none !important; }
-    .wrap { width: min(760px, calc(100% - 2rem)); margin: 0 auto; padding: 1.75rem 0 4rem; }
-    .logo { width: min(210px, 62vw); display: block; margin-bottom: 1.75rem; }
-    .kicker {
-      margin: 0 0 0.6rem;
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
-    h1, h2 {
-      font-family: var(--display);
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
       margin: 0;
+      min-height: 100vh;
+      background: #020617;
+      color: #f8fafc;
+      font: 16px/1.5 system-ui, sans-serif;
     }
-    h1 { font-size: clamp(2rem, 6vw, 3rem); }
-    h2 { font-size: 1.25rem; margin-bottom: 0.35rem; }
-    .lede { color: var(--ink-soft); max-width: 38rem; margin: 0.8rem 0 0; }
-    .card {
-      margin-top: 1.25rem;
-      padding: 1.15rem 1.15rem 1.25rem;
-      border: 1px solid var(--hair);
-      border-radius: 16px;
-      background: rgba(248, 250, 252, 0.03);
-    }
-    .help { color: var(--ink-soft); }
-    .help summary { cursor: pointer; color: var(--ink); font-family: var(--display); letter-spacing: -0.03em; }
-    .help h2 { font-size: 1rem; margin: 1rem 0 0.25rem; }
-    .help p, .help li { margin: 0.35rem 0; }
-    .help ol, .help ul { padding-left: 1.15rem; }
-    label, .label {
-      display: block;
-      margin: 0.95rem 0 0.35rem;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
-    .choice { display: flex; gap: 0.55rem; align-items: center; text-transform: none; letter-spacing: 0; font-size: 0.98rem; color: var(--ink); margin-top: 0.45rem; }
-    input[type="text"], input[type="password"], input[type="url"], textarea {
+    main { width: min(32rem, calc(100% - 2rem)); margin: 0 auto; padding: 2.5rem 0 4rem; }
+    h1 { font-size: 1.75rem; font-weight: 600; margin: 0 0 0.35rem; }
+    p { margin: 0; color: #94a3b8; }
+    label { display: block; margin: 1.1rem 0 0.35rem; font-size: 0.85rem; color: #94a3b8; }
+    input[type="text"] {
       width: 100%;
-      border: 1px solid var(--hair);
-      border-radius: 12px;
-      background: rgba(2, 6, 23, 0.45);
-      color: var(--ink);
-      font: inherit;
-      padding: 0.72rem 0.8rem;
-    }
-    textarea { resize: vertical; }
-    input:focus, textarea:focus, button:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-    input[type="file"] { color: var(--ink-soft); max-width: 100%; }
-    .row { display: grid; gap: 0.75rem 1rem; }
-    @media (min-width: 720px) {
-      .row--2 { grid-template-columns: 1fr 1fr; }
-    }
-    .hint, .error { margin: 0.4rem 0 0; color: var(--ink-soft); font-size: 0.92rem; }
-    .error { color: #f0b4b4; }
-    .warn { color: #e7c27a; }
-    .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
-    .btn {
-      appearance: none;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      padding: 0.78rem 1.15rem;
-      font-family: ui-monospace, "Cascadia Mono", monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor: pointer;
-      color: inherit;
+      padding: 0.7rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid rgba(248, 250, 252, 0.16);
       background: transparent;
+      color: inherit;
+      font: inherit;
     }
-    .btn--primary { background: var(--accent); color: #0a1420; font-weight: 600; }
-    .btn--primary:hover { background: var(--accent-soft); }
-    .btn--ghost { border-color: var(--hair); }
-    .btn--ghost:hover { border-color: var(--accent-soft); }
-    .btn--small { padding: 0.55rem 0.75rem; }
-    .btn:disabled { opacity: 0.55; cursor: progress; }
-    .faq-row { display: grid; gap: 0.45rem; margin-top: 0.75rem; }
-    @media (min-width: 720px) {
-      .faq-row { grid-template-columns: 1fr 1.3fr auto; align-items: start; }
+    input[type="file"] { color: #94a3b8; max-width: 100%; }
+    button {
+      margin-top: 1.25rem;
+      padding: 0.75rem 1.15rem;
+      border: 0;
+      border-radius: 999px;
+      background: #7e9fc0;
+      color: #0a1420;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
     }
-    pre, .plain {
-      white-space: pre-wrap;
-      word-break: break-word;
-      margin: 0.4rem 0 0;
-      font-family: ui-monospace, "Cascadia Mono", monospace;
-      font-size: 0.78rem;
-      line-height: 1.45;
-      color: #d5deea;
-    }
-    .qr-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-top: 0.8rem; }
-    #qr { width: 180px; height: 180px; background: #fff; border-radius: 12px; padding: 8px; }
-    #thumb-preview { width: min(220px, 100%); border-radius: 12px; margin-top: 0.7rem; border: 1px solid var(--hair); }
-    .checks { display: grid; gap: 0.15rem; }
-    code { font-family: ui-monospace, "Cascadia Mono", monospace; font-size: 0.92em; overflow-wrap: anywhere; }
-    .help, .card { min-width: 0; }
+    button:disabled { opacity: 0.55; cursor: progress; }
+    #status { margin-top: 1rem; min-height: 1.5rem; }
+    #status.error { color: #f0b4b4; }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <a href="https://superimmersive.io/"><img class="logo" src="/assets/logo-saturn.png" alt="Superimmersive"></a>
-    <p class="kicker">Studio</p>
-    <h1>Product intake</h1>
-    <p class="lede">Add a USDZ to the AR app. One publish commits the model, the Ask text, and the examples list on the live site.</p>
-
-    <details class="card help">
-      <summary>How to publish and test</summary>
-      <h2>What publish writes</h2>
-      <ul>
-        <li><code>models/&lt;id&gt;.usdz</code> — the file the app downloads, at <code>https://superimmersive.io/models/&lt;id&gt;.usdz</code>.</li>
-        <li><code>models/catalog.json</code> — only when “Examples list” is ticked, or when that tick is cleared on an id that was listed. Existing example models are locked.</li>
-        <li><code>ar/models/&lt;id&gt;.json</code> — the same Ask fields the app already reads for <code>?model=&lt;id&gt;</code>, plus placement and the download URL.</li>
-        <li><code>models/thumbs/&lt;id&gt;.jpg</code> — optional. The catalog has no thumbnail field, so the app does not show it.</li>
-      </ul>
-      <p>Placement is <code>floor</code> or <code>wall</code>. Animation mode is written only as <code>scrub</code>; a loop is the default and the field is left off, matching Biplane, Robot, and Axel Flux Motor. The share link is <code>https://superimmersive.io/ar?model=&lt;id&gt;</code>.</p>
-      <h2>Local Experience</h2>
-      <ol>
-        <li>Wait until the USDZ URL downloads in Safari. Pages often takes a minute or two after the commit.</li>
-        <li>On the iPhone, turn on Developer Mode, then Settings → Developer → Local Experiences → Register Local Experience.</li>
-        <li>URL prefix <code>https://superimmersive.io/ar</code>. Bundle ID <code>io.superimmersive.ar.Clip</code> (team <code>U5DGDWXQCP</code> in the site association file).</li>
-        <li>Open the share link in Safari. The clip should place the model on the surface you chose, loop or scrub as ticked, and answer from the FAQ.</li>
-      </ol>
-      <p>A clip already associated in App Store Connect can open the same link without a Local Experience. The association file is unchanged.</p>
-    </details>
-
-    <div id="app">
-      <section class="card">
-        <h2>Model</h2>
-        <label for="usdz">USDZ</label>
-        <input id="usdz" type="file" accept=".usdz,model/vnd.usdz+zip">
-        <p id="usdz-meta" class="hint">Required for a new id. Leave empty only when this id already has a USDZ on the site.</p>
-
-        <label for="thumb">Thumbnail</label>
-        <input id="thumb" type="file" accept="image/jpeg,image/png,image/webp">
-        <p id="thumb-meta" class="hint">Optional. The app catalog has no thumbnail field, so this is stored beside the model for you and is not written into catalog.json.</p>
-        <img id="thumb-preview" alt="" hidden>
-
-        <div class="row row--2">
-          <div>
-            <label for="name">Name</label>
-            <input id="name" type="text" maxlength="120" autocomplete="off" placeholder="Garden lamp">
-          </div>
-          <div>
-            <label for="model-id">Id</label>
-            <input id="model-id" type="text" maxlength="64" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="garden-lamp">
-            <p id="id-error" class="error" role="alert"></p>
-          </div>
-        </div>
-
-        <span class="label">Placement</span>
-        <div class="checks">
-          <label class="choice"><input id="placement-floor" type="radio" name="placement" value="floor" checked> Floor</label>
-          <label class="choice"><input id="placement-wall" type="radio" name="placement" value="wall"> Wall</label>
-        </div>
-
-        <label class="choice"><input id="animated" type="checkbox"> Animated</label>
-        <div id="animation-fields" hidden>
-          <span class="label">Animation mode</span>
-          <div class="checks">
-            <label class="choice"><input id="mode-loop" type="radio" name="animationMode" value="loop" checked> Loop — tap to play, the catalog default</label>
-            <label class="choice"><input id="mode-scrub" type="radio" name="animationMode" value="scrub"> Scrub — slider, as on Axel Flux Motor</label>
-          </div>
-        </div>
-
-        <label class="choice"><input id="examples" type="checkbox" checked> Show in the app Examples list</label>
-        <p class="hint">The examples list is <code>models/catalog.json</code>. There is no hidden flag. Untick this to publish the file and the Ask sidecar without listing the product.</p>
-      </section>
-
-      <section class="card">
-        <h2>Ask</h2>
-        <p class="hint">Copied onto the catalog entry when the product is listed, and always onto <code>ar/models/&lt;id&gt;.json</code>.</p>
-        <label for="dimensions">Dimensions</label>
-        <input id="dimensions" type="text" maxlength="160" placeholder="450 × 450 × 450 mm">
-        <label for="details">Details</label>
-        <textarea id="details" rows="2" maxlength="280" placeholder="One line for the deep link. Tap to play the baked animation."></textarea>
-        <label for="spec">Spec text</label>
-        <textarea id="spec" rows="6" placeholder="Plain product facts the Ask chat can quote."></textarea>
-        <span class="label">FAQ</span>
-        <div id="faq-list"></div>
-        <div class="actions">
-          <button class="btn btn--ghost" id="faq-add" type="button">Add question</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Share link</h2>
-        <label for="share-url">App Clip URL</label>
-        <input id="share-url" type="url" readonly>
-        <div class="qr-row">
-          <img id="qr" alt="QR code for the App Clip link" hidden>
-          <div>
-            <div class="actions">
-              <button class="btn btn--ghost" id="copy-url" type="button">Copy link</button>
-              <a class="btn btn--primary" id="qr-download" hidden download>Download QR code</a>
-            </div>
-            <p id="qr-note" class="hint">The QR code appears once the id is valid.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Will be written</h2>
-        <span class="label">Catalog entry</span>
-        <pre id="preview-catalog"></pre>
-        <span class="label">ar/models/&lt;id&gt;.json</span>
-        <pre id="preview-sidecar"></pre>
-        <div class="actions">
-          <button class="btn btn--primary" id="publish" type="button">Review publish</button>
-        </div>
-        <div id="confirm" hidden>
-          <p id="confirm-text" class="plain"></p>
-          <div class="actions">
-            <button class="btn btn--primary" id="confirm-go" type="button">Commit to the live site</button>
-            <button class="btn btn--ghost" id="confirm-cancel" type="button">Back</button>
-          </div>
-        </div>
-        <p id="status" class="hint" role="status"></p>
-        <div id="result" hidden>
-          <h2>Published</h2>
-          <p id="result-body" class="plain"></p>
-        </div>
-      </section>
-    </div>
+  <main>
+    <h1>Add a model</h1>
+    <p>Publishes the USDZ into the AR app examples list.</p>
+    <form id="app">
+      <label for="name">Name</label>
+      <input id="name" type="text" maxlength="120" autocomplete="off" required placeholder="Garden lamp">
+      <label for="usdz">USDZ</label>
+      <input id="usdz" type="file" accept=".usdz,model/vnd.usdz+zip" required>
+      <div><button id="publish" type="submit">Publish</button></div>
+      <p id="status" role="status"></p>
+    </form>
   </main>
-  <script src="/js/qrcode.min.js"></script>
   <script src="intake.js"></script>
 </body>
 </html>

@@ -27,18 +27,22 @@ function sample(overrides) {
   }, overrides);
 }
 
-test("the form is visible without a passphrase gate", () => {
+test("the form is a name, a USDZ, and publish", () => {
   const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
   const js = fs.readFileSync(path.join(__dirname, "intake.js"), "utf8");
-  assert.equal(html.includes('id="gate"'), false);
-  assert.equal(html.includes("Unlock"), false);
-  assert.equal(html.includes('id="pat"'), false);
-  assert.equal(html.includes("Personal access token"), false);
-  assert.equal(html.includes("GitHub token"), false);
-  assert.equal(html.includes("Load this id"), false);
-  assert.equal(js.includes("loadExisting"), false);
-  assert.match(html, /<div id="app">/);
+  assert.match(html, /id="app"/);
+  assert.match(html, /id="name"/);
+  assert.match(html, /id="usdz"/);
+  assert.match(html, /id="publish"/);
+  for (const gone of [
+    "Unlock", "GitHub token", "Personal access token", "Load this id",
+    "Thumbnail", "FAQ", "Placement", "Animated", "Share link", "Will be written",
+    "qrcode", "How to publish"
+  ]) {
+    assert.equal(html.includes(gone), false, gone);
+  }
   assert.equal(js.includes("GATE_SHA256"), false);
+  assert.equal(js.includes("loadExisting"), false);
   assert.equal(Object.hasOwn(api, "GATE_SHA256"), false);
 });
 
@@ -46,47 +50,27 @@ test("catalog.json round-trips without touching example entries", () => {
   assert.equal(api.stringifyJson(JSON.parse(originalCatalog)), originalCatalog);
 });
 
-test("slug, share URL, and FAQ cleanup", () => {
+test("a name becomes an examples-list entry", () => {
   assert.equal(api.slugify("Axel Flux Motor"), "axel-flux-motor");
   assert.equal(api.slugify("  Hello, World! "), "hello-world");
-  const prepared = api.prepareModel(sample());
-  assert.equal(prepared.shareUrl, "https://superimmersive.io/ar?model=garden-lamp");
+  const prepared = api.prepareModel({ name: "Garden Lamp", sizeBytes: 1200 });
+  assert.equal(prepared.id, "garden-lamp");
   assert.equal(prepared.modelUrl, "https://superimmersive.io/models/garden-lamp.usdz");
-  assert.equal(prepared.sidecarUrl, "https://superimmersive.io/ar/models/garden-lamp.json");
-  assert.equal(prepared.faq.length, 1);
-  assert.equal(prepared.faq[0].question, "How tall?");
-  assert.equal(prepared.entry.animated, true);
+  assert.equal(prepared.entry.placement, "floor");
+  assert.equal(prepared.entry.animated, false);
+  assert.equal(prepared.sidecar.name, "Garden Lamp");
+  assert.equal(Object.keys(prepared.sidecar).length, 1);
   assert.equal(Object.prototype.hasOwnProperty.call(prepared.entry, "animationMode"), false);
-  assert.equal(prepared.sidecar.details, "Tap to play.");
-  assert.equal(prepared.sidecar.url, prepared.modelUrl);
-  assert.equal(Object.prototype.hasOwnProperty.call(prepared.sidecar, "animationMode"), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(prepared.entry, "faq"), false);
 });
 
-test("scrub is stored and loop or a still model omits animationMode", () => {
-  const scrub = api.prepareModel(sample({
-    id: "hub-motor",
-    name: "Hub Motor",
-    placement: "wall",
-    animationMode: "scrub"
-  }));
-  assert.equal(scrub.entry.animationMode, "scrub");
-  assert.equal(scrub.entry.placement, "wall");
-  assert.equal(scrub.sidecar.animationMode, "scrub");
-  const still = api.prepareModel(sample({ animated: false, animationMode: "scrub" }));
-  assert.equal(still.entry.animated, false);
-  assert.equal(Object.prototype.hasOwnProperty.call(still.entry, "animationMode"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(still.sidecar, "animationMode"), false);
-});
-
-test("adding a model keeps every current catalog entry, and hiding removes only the new id", () => {
+test("adding a model keeps every current catalog entry", () => {
   const prepared = api.prepareModel(sample());
   const added = api.applyCatalog(originalCatalog, prepared.entry, true);
   assert.equal(added.action, "add");
   const parsed = JSON.parse(added.text);
   assert.deepEqual(parsed.slice(0, -1), JSON.parse(originalCatalog));
   assert.equal(parsed.at(-1).id, "garden-lamp");
-  assert.ok(added.text.includes("\\u2014"));
-  assert.equal(added.text.includes("\u2014"), false);
   const again = api.applyCatalog(added.text, prepared.entry, true);
   assert.equal(again.changed, false);
   const removed = api.applyCatalog(added.text, prepared.entry, false);
@@ -96,14 +80,12 @@ test("adding a model keeps every current catalog entry, and hiding removes only 
   assert.equal(absent.text, originalCatalog);
 });
 
-test("reserved example ids and broken FAQ rows are refused", () => {
+test("reserved example ids are refused", () => {
   assert.match(api.validateId("biplane"), /example/);
   assert.throws(() => api.prepareModel(sample({ id: "test-box", name: "Test Box" })), /example/);
   assert.throws(() => api.prepareModel(sample({ id: "robot" })), /example/);
   assert.throws(() => api.prepareModel(sample({ id: "axel-flux-motor" })), /example/);
-  assert.throws(() => api.normalizeFaq([{ question: "Colour?", answer: "" }]), /both/);
-  assert.throws(() => api.prepareModel(sample({ placement: "ceiling" })), /floor or wall/);
-  assert.throws(() => api.prepareModel(sample({ animationMode: "ping" })), /loop or scrub/);
+  assert.throws(() => api.prepareModel({ name: "!!!" }), /name/);
 });
 
 test("bundled and duplicate catalog rows are refused", () => {
@@ -125,10 +107,9 @@ test("base64 matches the file bytes, including a chunk larger than 32 KB", () =>
   assert.equal(api.decodeBase64ToString(wrapped), "catalog\n");
 });
 
-test("size warnings follow the GitHub and App Clip limits", () => {
+test("a file over 70 MB is refused", () => {
   assert.equal(api.sizeWarning(1000), "");
-  assert.match(api.sizeWarning(9 * 1024 * 1024), /few MB/);
-  assert.match(api.sizeWarning(50 * 1024 * 1024), /50 MB/);
+  assert.equal(api.sizeWarning(50 * 1024 * 1024), "");
   assert.match(api.sizeWarning(api.MAX_BYTES + 1), /70 MB/);
 });
 
@@ -240,16 +221,14 @@ function posts(calls, suffix, method) {
   });
 }
 
-test("publish commits the USDZ, sidecar, thumbnail, and catalog in one shot", async () => {
+test("publish commits the USDZ, sidecar, and catalog in one shot", async () => {
   const github = githubDouble(originalCatalog);
   const model = new Uint8Array([1, 2, 3, 255]);
-  const thumb = new Uint8Array([9, 8, 7]);
   const prepared = api.prepareModel(sample({ sizeBytes: 0 }));
   const result = await api.publishModel({
     token: "github_pat_test_token_value",
     prepared: prepared,
     modelBytes: model,
-    thumbBytes: thumb,
     fetch: github.fetchImpl
   });
   assert.equal(result.login, "devon");
@@ -262,8 +241,7 @@ test("publish commits the USDZ, sidecar, thumbnail, and catalog in one shot", as
   assert.deepEqual(paths, [
     "ar/models/garden-lamp.json",
     "models/catalog.json",
-    "models/garden-lamp.usdz",
-    "models/thumbs/garden-lamp.jpg"
+    "models/garden-lamp.usdz"
   ]);
   const blobs = posts(github.calls, "/git/blobs");
   const usdzBlob = blobs.find(function (call) { return call.body.encoding === "base64" && call.body.content.startsWith(api.bytesToBase64(model).slice(0, 8)); });
@@ -274,12 +252,12 @@ test("publish commits the USDZ, sidecar, thumbnail, and catalog in one shot", as
   const published = JSON.parse(catalogBlob.body.content);
   assert.deepEqual(published.slice(0, -1), JSON.parse(originalCatalog));
   assert.equal(published.at(-1).sizeBytes, 4);
-  assert.equal(Object.prototype.hasOwnProperty.call(published.at(-1), "animationMode"), false);
-  const sidecarBlob = blobs.find(function (call) { return call.body.encoding === "utf-8" && call.body.content.includes('"details"'); });
-  const sidecar = JSON.parse(sidecarBlob.body.content);
-  assert.equal(sidecar.details, "Tap to play.");
-  assert.equal(sidecar.sizeBytes, 4);
-  assert.equal(sidecar.faq[0].answer, "400 mm");
+  assert.equal(published.at(-1).placement, "floor");
+  assert.equal(published.at(-1).animated, false);
+  const sidecarBlob = blobs.find(function (call) {
+    return call.body.encoding === "utf-8" && String(call.body.content).trim().startsWith("{");
+  });
+  assert.deepEqual(JSON.parse(sidecarBlob.body.content), { name: "Garden Lamp" });
   const commit = posts(github.calls, "/git/commits")[0].body;
   assert.deepEqual(commit.parents, ["1".repeat(40)]);
   assert.match(commit.message, /Publish AR model garden-lamp/);
@@ -288,52 +266,39 @@ test("publish commits the USDZ, sidecar, thumbnail, and catalog in one shot", as
   assert.equal(ref.body.force, false);
 });
 
-test("a metadata update keeps the existing USDZ and can leave the examples list", async () => {
+test("publishing again without a new file keeps the USDZ and stays listed", async () => {
   const listed = api.applyCatalog(originalCatalog, api.prepareModel(sample()).entry, true).text;
   const github = githubDouble(listed);
   github.usdz.set("garden-lamp.usdz", { sha: "existing-usdz", size: 4321 });
-  const prepared = api.prepareModel(sample({
-    sizeBytes: 1,
-    listInExamples: false,
-    specText: "Updated spec"
-  }));
+  const prepared = api.prepareModel(sample({ name: "Garden Lamp Revised", sizeBytes: 1 }));
   const result = await api.publishModel({
     token: "github_pat_test_token_value",
     prepared: prepared,
     fetch: github.fetchImpl
   });
-  assert.equal(result.catalogAction, "remove");
+  assert.equal(result.catalogAction, "update");
   const paths = posts(github.calls, "/git/trees")[0].body.tree.map(function (item) { return item.path; });
   assert.equal(paths.includes("models/garden-lamp.usdz"), false);
-  assert.equal(paths.includes("models/catalog.json"), true);
-  const catalogBlob = posts(github.calls, "/git/blobs").find(function (call) {
-    return call.body.encoding === "utf-8" && call.body.content.indexOf("catalog") !== -1 || (call.body.content && call.body.content.indexOf("test-box") !== -1);
-  });
   const catalogCall = posts(github.calls, "/git/blobs").find(function (call) {
     return call.body.encoding === "utf-8" && String(call.body.content).indexOf('"test-box"') !== -1;
   });
   const published = JSON.parse(catalogCall.body.content);
-  assert.equal(published.some(function (item) { return item.id === "garden-lamp"; }), false);
-  assert.deepEqual(published, JSON.parse(originalCatalog));
-  const sidecar = JSON.parse(posts(github.calls, "/git/blobs").find(function (call) {
-    return call.body.encoding === "utf-8" && String(call.body.content).indexOf('"Updated spec"') !== -1;
-  }).body.content);
-  assert.equal(sidecar.sizeBytes, 4321);
-  assert.equal(sidecar.specText, "Updated spec");
-  assert.equal(catalogBlob.body.content.includes("garden-lamp"), false);
+  const row = published.find(function (item) { return item.id === "garden-lamp"; });
+  assert.equal(row.name, "Garden Lamp Revised");
+  assert.equal(row.sizeBytes, 4321);
 });
 
-test("a product that was never listed does not rewrite catalog.json", async () => {
+test("every publish adds the catalog row", async () => {
   const github = githubDouble(originalCatalog);
   const result = await api.publishModel({
     token: "github_pat_test_token_value",
-    prepared: api.prepareModel(sample({ listInExamples: false, sizeBytes: 0 })),
+    prepared: api.prepareModel(sample({ sizeBytes: 0 })),
     modelBytes: new Uint8Array([4, 5]),
     fetch: github.fetchImpl
   });
-  assert.equal(result.listed, false);
+  assert.equal(result.listed, true);
   const paths = posts(github.calls, "/git/trees")[0].body.tree.map(function (item) { return item.path; });
-  assert.deepEqual(paths.sort(), ["ar/models/garden-lamp.json", "models/garden-lamp.usdz"]);
+  assert.deepEqual(paths.sort(), ["ar/models/garden-lamp.json", "models/catalog.json", "models/garden-lamp.usdz"]);
 });
 
 test("a lost race retries once and the second commit parents the new head", async () => {

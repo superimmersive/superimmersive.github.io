@@ -1,8 +1,6 @@
 /* Studio intake for Superimmersive AR models.
-   Publish path: the browser calls the GitHub Git Data API and makes one commit
-   on the default branch. The page does not ask for a token. Catalog fields match
-   models/catalog.json. Ask text is mirrored onto ar/models/<id>.json, which is
-   the deep-link sidecar the app already fetches. */
+   The browser calls the GitHub Git Data API and makes one commit on the default
+   branch: the USDZ, a catalog row, and a name-only sidecar. */
 (function (root, factory) {
   var api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
@@ -15,10 +13,7 @@
     api: "https://api.github.com"
   };
   var RESERVED_IDS = ["test-box", "biplane", "robot", "axel-flux-motor"];
-  var WARN_BYTES = 8 * 1024 * 1024;
-  var STRONG_WARN_BYTES = 50 * 1024 * 1024;
   var MAX_BYTES = 70 * 1024 * 1024;
-  var MAX_THUMB_BYTES = 5 * 1024 * 1024;
 
   function IntakeError(message, status) {
     this.name = "IntakeError";
@@ -43,10 +38,6 @@
     return SITE + "/ar/models/" + id + ".json";
   }
 
-  function thumbUrl(id) {
-    return SITE + "/models/thumbs/" + id + ".jpg";
-  }
-
   function slugify(name) {
     return String(name || "")
       .normalize("NFKD")
@@ -69,20 +60,6 @@
     return "";
   }
 
-  function normalizeFaq(rows) {
-    var out = [];
-    (rows || []).forEach(function (row) {
-      var question = String((row && row.question) || "").trim();
-      var answer = String((row && row.answer) || "").trim();
-      if (!question && !answer) return;
-      if (!question || !answer) {
-        throw new IntakeError("Each FAQ row needs both a question and an answer.");
-      }
-      out.push({ question: question, answer: answer });
-    });
-    return out;
-  }
-
   function stringifyJson(value) {
     var json = JSON.stringify(value, null, 2);
     var escaped = json.replace(/[\u007f-\uffff]/g, function (ch) {
@@ -91,54 +68,13 @@
     return escaped + "\n";
   }
 
-  function buildCatalogEntry(input) {
-    var entry = {
-      id: input.id,
-      name: input.name,
-      url: modelUrl(input.id),
-      sizeBytes: input.sizeBytes,
-      placement: input.placement,
-      animated: input.animated
-    };
-    if (input.animated && input.animationMode === "scrub") entry.animationMode = "scrub";
-    if (input.specText) entry.specText = input.specText;
-    if (input.faq && input.faq.length) entry.faq = input.faq;
-    if (input.dimensions) entry.dimensions = input.dimensions;
-    return entry;
-  }
-
-  function buildSidecar(input) {
-    var doc = {
-      id: input.id,
-      name: input.name,
-      url: modelUrl(input.id),
-      sizeBytes: input.sizeBytes,
-      placement: input.placement,
-      animated: input.animated
-    };
-    if (input.animated && input.animationMode === "scrub") doc.animationMode = "scrub";
-    doc.dimensions = input.dimensions || "";
-    doc.details = input.details || "";
-    doc.specText = input.specText || "";
-    doc.faq = input.faq || [];
-    return doc;
-  }
-
   function prepareModel(input) {
-    var id = String(input.id || "").trim();
-    var idError = validateId(id);
-    if (idError) throw new IntakeError(idError);
     var name = String(input.name || "").trim();
     if (!name) throw new IntakeError("Enter a product name.");
-    if (input.placement !== "floor" && input.placement !== "wall") {
-      throw new IntakeError("Placement must be floor or wall.");
-    }
-    var animated = Boolean(input.animated);
-    var animationMode = input.animationMode === "scrub" ? "scrub" : "loop";
-    if (input.animationMode && input.animationMode !== "loop" && input.animationMode !== "scrub") {
-      throw new IntakeError("Animation mode must be loop or scrub.");
-    }
-    var sizeBytes = Number(input.sizeBytes);
+    var id = String(input.id || "").trim() || slugify(name);
+    var idError = validateId(id);
+    if (idError) throw new IntakeError(idError === "Enter an id." ? "Enter a product name." : idError);
+    var sizeBytes = input.sizeBytes == null || input.sizeBytes === "" ? 0 : Number(input.sizeBytes);
     if (!Number.isInteger(sizeBytes) || sizeBytes < 0) {
       throw new IntakeError("Model size is missing.");
     }
@@ -146,21 +82,20 @@
       id: id,
       name: name,
       sizeBytes: sizeBytes,
-      placement: input.placement,
-      animated: animated,
-      animationMode: animationMode,
-      specText: String(input.specText || "").trim(),
-      dimensions: String(input.dimensions || "").trim(),
-      details: String(input.details || "").trim(),
-      faq: normalizeFaq(input.faq),
-      listInExamples: input.listInExamples !== false
+      listInExamples: true
     };
-    prepared.entry = buildCatalogEntry(prepared);
-    prepared.sidecar = buildSidecar(prepared);
+    prepared.entry = {
+      id: id,
+      name: name,
+      url: modelUrl(id),
+      sizeBytes: sizeBytes,
+      placement: "floor",
+      animated: false
+    };
+    prepared.sidecar = { name: name };
     prepared.shareUrl = shareUrl(id);
     prepared.modelUrl = modelUrl(id);
     prepared.sidecarUrl = sidecarUrl(id);
-    prepared.thumbUrl = thumbUrl(id);
     return prepared;
   }
 
@@ -226,13 +161,7 @@
 
   function sizeWarning(bytes) {
     if (bytes > MAX_BYTES) {
-      return "This USDZ is " + formatBytes(bytes) + ". The page stops at 70 MB so the GitHub request stays under the API limit. GitHub itself blocks files over 100 MB and warns over 50 MB. Aim for a few MB so the App Clip download stays quick.";
-    }
-    if (bytes >= STRONG_WARN_BYTES) {
-      return "This USDZ is " + formatBytes(bytes) + ". GitHub warns on files over 50 MB, and an App Clip download this large will feel slow.";
-    }
-    if (bytes >= WARN_BYTES) {
-      return "This USDZ is " + formatBytes(bytes) + ". The catalog note asks for a few MB so App Clip loads stay quick. Publishing still works.";
+      return "This USDZ is " + formatBytes(bytes) + ". The page stops at 70 MB.";
     }
     return "";
   }
@@ -295,11 +224,7 @@
     var fetchImpl = options.fetch || fetch;
     var onStatus = options.onStatus || function () {};
     var modelBytes = options.modelBytes || null;
-    var thumbBytes = options.thumbBytes || null;
     if (modelBytes && modelBytes.length > MAX_BYTES) throw new IntakeError(sizeWarning(modelBytes.length));
-    if (thumbBytes && thumbBytes.length > MAX_THUMB_BYTES) {
-      throw new IntakeError("The thumbnail is over 5 MB after conversion. Use a smaller image.");
-    }
 
     onStatus("Checking the live site…");
     var auth;
@@ -356,10 +281,6 @@
         onStatus("Uploading the USDZ (" + formatBytes(modelBytes.length) + ")…");
         writes.push({ path: "models/" + prepared.id + ".usdz", bytes: modelBytes });
       }
-      if (thumbBytes && thumbBytes.length) {
-        onStatus("Uploading the thumbnail…");
-        writes.push({ path: "models/thumbs/" + prepared.id + ".jpg", bytes: thumbBytes });
-      }
       writes.push({ path: "ar/models/" + prepared.id + ".json", text: stringifyJson(prepared.sidecar) });
       if (catalogResult.changed) {
         onStatus(prepared.listInExamples ? "Updating the examples catalog…" : "Removing it from the examples catalog…");
@@ -393,7 +314,6 @@
           shareUrl: prepared.shareUrl,
           modelUrl: prepared.modelUrl,
           sidecarUrl: prepared.sidecarUrl,
-          thumbUrl: thumbBytes ? prepared.thumbUrl : "",
           listed: prepared.listInExamples
         };
       }
@@ -431,7 +351,6 @@
         shareUrl: prepared.shareUrl,
         modelUrl: prepared.modelUrl,
         sidecarUrl: prepared.sidecarUrl,
-        thumbUrl: thumbBytes ? prepared.thumbUrl : "",
         listed: prepared.listInExamples,
         catalogAction: catalogResult.action
       };
@@ -448,357 +367,50 @@
   }
 
   function mount() {
-    var app = document.getElementById("app");
-    if (!app) return;
-
-    var usdzInput = document.getElementById("usdz");
-    var usdzMeta = document.getElementById("usdz-meta");
-    var thumbInput = document.getElementById("thumb");
-    var thumbMeta = document.getElementById("thumb-meta");
-    var thumbPreview = document.getElementById("thumb-preview");
+    var form = document.getElementById("app");
+    if (!form) return;
     var nameInput = document.getElementById("name");
-    var idInput = document.getElementById("model-id");
-    var idError = document.getElementById("id-error");
-    var placementWall = document.getElementById("placement-wall");
-    var animatedInput = document.getElementById("animated");
-    var animationFields = document.getElementById("animation-fields");
-    var modeScrub = document.getElementById("mode-scrub");
-    var examplesInput = document.getElementById("examples");
-    var dimensionsInput = document.getElementById("dimensions");
-    var detailsInput = document.getElementById("details");
-    var specInput = document.getElementById("spec");
-    var faqList = document.getElementById("faq-list");
-    var previewCatalog = document.getElementById("preview-catalog");
-    var previewSidecar = document.getElementById("preview-sidecar");
-    var shareInput = document.getElementById("share-url");
-    var qrImg = document.getElementById("qr");
-    var qrDownload = document.getElementById("qr-download");
-    var qrNote = document.getElementById("qr-note");
+    var usdzInput = document.getElementById("usdz");
     var status = document.getElementById("status");
-    var confirmBox = document.getElementById("confirm");
-    var confirmText = document.getElementById("confirm-text");
-    var result = document.getElementById("result");
-    var resultBody = document.getElementById("result-body");
-    var idDirty = false;
-    var loaded = null;
-    var booted = false;
-    var qrToken = 0;
-    var qrObjectUrl = "";
+    var button = document.getElementById("publish");
 
     function setStatus(message, isError) {
       status.textContent = message || "";
       status.classList.toggle("error", Boolean(isError));
     }
 
-    function readFaq() {
-      return Array.prototype.map.call(faqList.querySelectorAll(".faq-row"), function (row) {
-        return {
-          question: row.querySelector(".faq-q").value,
-          answer: row.querySelector(".faq-a").value
-        };
-      });
-    }
-
-    function currentSize() {
-      if (usdzInput.files && usdzInput.files[0]) return usdzInput.files[0].size;
-      if (loaded && loaded.id === idInput.value.trim() && loaded.sizeBytes) return loaded.sizeBytes;
-      return 0;
-    }
-
-    function readForm() {
-      return {
-        id: idInput.value,
-        name: nameInput.value,
-        placement: placementWall.checked ? "wall" : "floor",
-        animated: animatedInput.checked,
-        animationMode: modeScrub.checked ? "scrub" : "loop",
-        listInExamples: examplesInput.checked,
-        dimensions: dimensionsInput.value,
-        details: detailsInput.value,
-        specText: specInput.value,
-        faq: readFaq(),
-        sizeBytes: currentSize()
-      };
-    }
-
-    function addFaqRow(question, answer) {
-      var row = document.createElement("div");
-      row.className = "faq-row";
-      var q = document.createElement("input");
-      q.className = "faq-q";
-      q.type = "text";
-      q.maxLength = 200;
-      q.placeholder = "Question";
-      q.value = question || "";
-      q.setAttribute("aria-label", "FAQ question");
-      var a = document.createElement("textarea");
-      a.className = "faq-a";
-      a.rows = 2;
-      a.placeholder = "Answer";
-      a.value = answer || "";
-      a.setAttribute("aria-label", "FAQ answer");
-      var remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "btn btn--ghost btn--small";
-      remove.textContent = "Remove";
-      remove.addEventListener("click", function () {
-        row.remove();
-        refresh();
-      });
-      q.addEventListener("input", refresh);
-      a.addEventListener("input", refresh);
-      row.append(q, a, remove);
-      faqList.append(row);
-    }
-
-    function qrDataUrl(url) {
-      var QR = globalThis.QRCode;
-      if (!QR || !QR.toDataURL) {
-        return Promise.reject(new IntakeError("QR library missing."));
-      }
-      return new Promise(function (resolve, reject) {
-        QR.toDataURL(url, {
-          width: 512,
-          margin: 2,
-          errorCorrectionLevel: "M",
-          color: { dark: "#020617", light: "#ffffff" }
-        }, function (err, dataUrl) {
-          if (err) reject(err);
-          else resolve(dataUrl);
-        });
-      });
-    }
-
-    function showQr(id) {
-      var url = shareUrl(id);
-      var token = ++qrToken;
-      shareInput.value = url;
-      qrNote.textContent = "Points at the App Clip link. It starts working after GitHub Pages finishes the publish, usually within a couple of minutes.";
-      var pending;
-      try {
-        pending = qrDataUrl(url);
-      } catch (error) {
-        pending = Promise.reject(error);
-      }
-      pending.then(function (dataUrl) {
-        if (token !== qrToken) return;
-        qrImg.src = dataUrl;
-        qrImg.hidden = false;
-        return fetch(dataUrl).then(function (res) { return res.blob(); });
-      }).then(function (blob) {
-        if (!blob || token !== qrToken) return;
-        if (qrObjectUrl) URL.revokeObjectURL(qrObjectUrl);
-        qrObjectUrl = URL.createObjectURL(blob);
-        qrDownload.href = qrObjectUrl;
-        qrDownload.download = "superimmersive-" + id + "-ar.png";
-        qrDownload.hidden = false;
-      }).catch(function () {
-        if (token !== qrToken) return;
-        qrImg.hidden = true;
-        qrDownload.hidden = true;
-        qrNote.textContent = "Could not build the QR code in this browser. Copy the link above.";
-      });
-    }
-
-    function hideQr() {
-      qrToken += 1;
-      shareInput.value = "";
-      qrImg.hidden = true;
-      qrImg.removeAttribute("src");
-      qrDownload.hidden = true;
-      qrNote.textContent = "The QR code appears once the id is valid.";
-    }
-
-    function refresh() {
-      if (!idDirty) idInput.value = slugify(nameInput.value);
-      animationFields.hidden = !animatedInput.checked;
-      var id = idInput.value.trim();
-      var problem = id ? validateId(id) : "";
-      idError.textContent = problem;
-      idInput.setAttribute("aria-invalid", problem ? "true" : "false");
-      if (id && !problem) showQr(id);
-      else hideQr();
-      try {
-        var prepared = prepareModel(readForm());
-        previewCatalog.textContent = prepared.listInExamples
-          ? stringifyJson(prepared.entry)
-          : "Left out of models/catalog.json, so it does not show in the app Examples list.\nThe share link still publishes the USDZ and ar/models/" + prepared.id + ".json.";
-        previewSidecar.textContent = stringifyJson(prepared.sidecar);
-      } catch (error) {
-        previewCatalog.textContent = error.message;
-        previewSidecar.textContent = "";
-      }
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
       var file = usdzInput.files && usdzInput.files[0];
-      if (file) {
-        var warning = sizeWarning(file.size);
-        usdzMeta.textContent = file.name + " · " + formatBytes(file.size) + (warning ? " " + warning : "");
-      } else if (loaded && loaded.id === id && loaded.sizeBytes) {
-        usdzMeta.textContent = "No new file. Publish keeps the USDZ already on the site (" + formatBytes(loaded.sizeBytes) + ").";
-      } else {
-        usdzMeta.textContent = "Required for a new id. Leave empty only when this id already has a USDZ on the site.";
-      }
-    }
-
-    function openApp() {
-      if (!booted) {
-        booted = true;
-        if (!faqList.children.length) addFaqRow("", "");
-        refresh();
-      }
-    }
-
-    async function imageFileToJpeg(file) {
-      if (file.size > 15 * 1024 * 1024) throw new IntakeError("Choose a thumbnail under 15 MB.");
-      if (typeof createImageBitmap !== "function") {
-        throw new IntakeError("This browser cannot prepare the thumbnail. Use a current Safari or Chrome.");
-      }
-      var bitmap = await createImageBitmap(file);
-      var maxEdge = 1400;
-      var scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
-      var canvas = document.createElement("canvas");
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      var ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      if (bitmap.close) bitmap.close();
-      var blob = await new Promise(function (resolve) { canvas.toBlob(resolve, "image/jpeg", 0.86); });
-      if (!blob) throw new IntakeError("Could not convert the thumbnail to JPEG.");
-      return new Uint8Array(await blob.arrayBuffer());
-    }
-
-    document.getElementById("faq-add").addEventListener("click", function () {
-      addFaqRow("", "");
-    });
-
-    document.getElementById("copy-url").addEventListener("click", function () {
-      if (!shareInput.value) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shareInput.value).then(function () {
-          qrNote.textContent = "Link copied.";
-        }).catch(function () {
-          shareInput.focus();
-          shareInput.select();
-        });
-      } else {
-        shareInput.focus();
-        shareInput.select();
-      }
-    });
-
-    nameInput.addEventListener("input", function () {
-      refresh();
-    });
-    idInput.addEventListener("input", function () {
-      idDirty = idInput.value.trim() !== "";
-      if (!idDirty) idInput.value = slugify(nameInput.value);
-      refresh();
-    });
-    ["placement-floor", "placement-wall", "animated", "mode-loop", "mode-scrub", "examples"].forEach(function (elementId) {
-      document.getElementById(elementId).addEventListener("change", refresh);
-    });
-    [dimensionsInput, detailsInput, specInput].forEach(function (el) {
-      el.addEventListener("input", refresh);
-    });
-
-    usdzInput.addEventListener("change", function () {
-      var file = usdzInput.files && usdzInput.files[0];
-      if (file && !/\.usdz$/i.test(file.name)) {
-        usdzInput.value = "";
-        setStatus("Choose a .usdz file.", true);
-      }
-      confirmBox.hidden = true;
-      refresh();
-    });
-
-    thumbInput.addEventListener("change", function () {
-      var file = thumbInput.files && thumbInput.files[0];
-      thumbPreview.hidden = true;
       if (!file) {
-        thumbMeta.textContent = "Optional. The app catalog has no thumbnail field, so this is stored beside the model for you and is not written into catalog.json.";
+        setStatus("Choose a USDZ file.", true);
         return;
       }
-      thumbMeta.textContent = file.name + " · " + formatBytes(file.size) + ". Saved as models/thumbs/<id>.jpg. The AR app does not read it.";
-      thumbPreview.src = URL.createObjectURL(file);
-      thumbPreview.hidden = false;
-    });
-
-    document.getElementById("publish").addEventListener("click", function () {
-      result.hidden = true;
-      try {
-        var prepared = prepareModel(readForm());
-        var file = usdzInput.files && usdzInput.files[0];
-        if (file && file.size > MAX_BYTES) throw new IntakeError(sizeWarning(file.size));
-        var lines = [
-          "This commits directly to the live branch of superimmersive/superimmersive.github.io. It does not open a pull request.",
-          "",
-          "Product: " + prepared.name + " (" + prepared.id + ")",
-          "Share: " + prepared.shareUrl,
-          "Download: " + prepared.modelUrl,
-          "Examples list: " + (prepared.listInExamples ? "yes" : "no"),
-          "Placement: " + prepared.placement,
-          "Animated: " + (prepared.animated ? (prepared.animationMode === "scrub" ? "scrub slider" : "loop") : "no"),
-          file ? "USDZ: replace with " + file.name : "USDZ: keep the file already on the site, or stop if there is none"
-        ];
-        confirmText.textContent = lines.join("\n");
-        confirmBox.hidden = false;
-        confirmBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        setStatus("");
-      } catch (error) {
-        confirmBox.hidden = true;
-        setStatus(error.message, true);
+      if (!/\.usdz$/i.test(file.name)) {
+        usdzInput.value = "";
+        setStatus("Choose a .usdz file.", true);
+        return;
       }
-    });
-
-    document.getElementById("confirm-cancel").addEventListener("click", function () {
-      confirmBox.hidden = true;
-    });
-
-    document.getElementById("confirm-go").addEventListener("click", async function () {
-      var button = document.getElementById("confirm-go");
+      if (file.size > MAX_BYTES) {
+        setStatus(sizeWarning(file.size), true);
+        return;
+      }
       button.disabled = true;
-      result.hidden = true;
       try {
-        var prepared = prepareModel(readForm());
-        var file = usdzInput.files && usdzInput.files[0];
-        var modelBytes = file ? new Uint8Array(await file.arrayBuffer()) : null;
-        var thumbFile = thumbInput.files && thumbInput.files[0];
-        var thumbBytes = thumbFile ? await imageFileToJpeg(thumbFile) : null;
         var published = await publishModel({
-          prepared: prepared,
-          modelBytes: modelBytes,
-          thumbBytes: thumbBytes,
+          name: nameInput.value,
+          modelBytes: new Uint8Array(await file.arrayBuffer()),
           onStatus: setStatus
         });
-        confirmBox.hidden = true;
-        result.hidden = false;
-        if (published.unchanged) {
-          resultBody.textContent = "Those files already match the live site. Nothing was committed.\n" + published.shareUrl;
-        } else {
-          resultBody.textContent = [
-            "Published as " + published.login + " on " + published.branch + ".",
-            "Commit: " + published.commitUrl,
-            "Share: " + published.shareUrl,
-            "USDZ: " + published.modelUrl,
-            "Ask sidecar: " + published.sidecarUrl,
-            published.thumbUrl ? "Thumbnail: " + published.thumbUrl : "No thumbnail in this commit.",
-            published.listed ? "It is in the Examples list." : "It is not in the Examples list.",
-            "",
-            "GitHub Pages usually picks this up within a couple of minutes. Then open the share link, or register a Local Experience if the App Clip build is not on the App Store yet. Steps are in the help above."
-          ].join("\n");
-        }
-        loaded = { id: prepared.id, sizeBytes: prepared.sizeBytes };
-        setStatus(published.unchanged ? "Nothing to publish." : "Published.");
-        result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        setStatus(published.unchanged
+          ? "Nothing to publish."
+          : "Published. It will show in the app once the site updates.");
       } catch (error) {
         setStatus(friendly(error), true);
       } finally {
         button.disabled = false;
       }
     });
-
-    openApp();
   }
 
   if (typeof document !== "undefined") {
@@ -814,10 +426,7 @@
     IntakeError: IntakeError,
     slugify: slugify,
     validateId: validateId,
-    normalizeFaq: normalizeFaq,
     stringifyJson: stringifyJson,
-    buildCatalogEntry: buildCatalogEntry,
-    buildSidecar: buildSidecar,
     prepareModel: prepareModel,
     applyCatalog: applyCatalog,
     bytesToBase64: bytesToBase64,
@@ -825,7 +434,6 @@
     modelUrl: modelUrl,
     shareUrl: shareUrl,
     sidecarUrl: sidecarUrl,
-    thumbUrl: thumbUrl,
     sizeWarning: sizeWarning,
     formatBytes: formatBytes,
     verifyToken: verifyToken,
