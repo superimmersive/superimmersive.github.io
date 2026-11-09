@@ -4,6 +4,7 @@ node_modules/
 .env
 .env.*
 __pycache__/
+.wrangler/
 
 # Over GitHub's 100 MB limit — site uses compressed homes-01/02
 assets/products/homes-demos/SIH_SR_*.mp4
