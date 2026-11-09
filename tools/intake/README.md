@@ -1,15 +1,27 @@
-# Studio model intake
+# Client model intake
 
 Unlisted page: [https://superimmersive.io/tools/intake/](https://superimmersive.io/tools/intake/)
 
-A name and a USDZ. Publish commits them to `main`:
+A name and a USDZ. Publish sends them to the private Cloudflare R2 bucket `superimmersive-client-models`. The page does not commit the file to this repository, and the bucket has no public URL.
 
-| Path | Role |
+| Object | Role |
 | --- | --- |
-| `models/<id>.usdz` | The file. Public URL `https://superimmersive.io/models/<id>.usdz`. |
-| `models/catalog.json` | One new examples-list row. Other entries stay. |
-| `ar/models/<id>.json` | The name only, so the app can label the product. |
+| `models/<id>.usdz` | The file. |
+| `models/<id>.json` | The product name. |
 
-The id is the name, lowercased, with spaces turned into hyphens. `test-box`, `biplane`, `robot`, and `axel-flux-motor` are refused. A file over 70 MB is refused. The row is always `placement: floor` and `animated: false`.
+The id is the name, lowercased, with spaces turned into hyphens. Uploading the same name again replaces that model. `test-box`, `biplane`, `robot`, and `axel-flux-motor` are refused. A file over 70 MB is refused.
 
-`/tools/` is disallowed in `robots.txt`. The page sends `noindex`. There is no server. A publish updates `main` immediately.
+After the file is stored, the page draws a QR code for `https://superimmersive.io/ar?model=<id>` and shows that link. The code launches the App Clip. It does not contain the USDZ.
+
+The browser posts the file to `https://superimmersive-intake.superimmersive.workers.dev`. That Worker holds the only permission to read or write the bucket. It accepts uploads from `superimmersive.io` and `superimmersive.github.io`.
+
+The App Clip asks that same service for the file:
+
+| Request | Response |
+| --- | --- |
+| `GET /models/<id>` | `{ id, url, expiresAt }`. `url` downloads the USDZ and lasts 10 minutes. |
+| `GET /models/<id>.usdz?exp=…&sig=…` | The USDZ bytes, only while the signature is still valid. |
+
+A missing id returns 404. The bucket address is never returned.
+
+`/tools/` is disallowed in `robots.txt`. The page sends `noindex`.

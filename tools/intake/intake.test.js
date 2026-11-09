@@ -4,29 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const api = require("./intake.js");
 
-const root = path.join(__dirname, "..", "..");
-const catalogPath = path.join(root, "models", "catalog.json");
-const originalCatalog = fs.readFileSync(catalogPath, "utf8");
-
-function sample(overrides) {
-  return Object.assign({
-    id: "garden-lamp",
-    name: "Garden Lamp",
-    placement: "floor",
-    animated: true,
-    animationMode: "loop",
-    sizeBytes: 1200,
-    specText: "A shade \u2014 400 mm",
-    dimensions: "400 \u00d7 200 mm",
-    details: "Tap to play.",
-    faq: [
-      { question: " How tall? ", answer: " 400 mm " },
-      { question: " ", answer: "" }
-    ],
-    listInExamples: true
-  }, overrides);
-}
-
 test("the form is a name, a USDZ, and publish", () => {
   const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
   const js = fs.readFileSync(path.join(__dirname, "intake.js"), "utf8");
@@ -34,315 +11,259 @@ test("the form is a name, a USDZ, and publish", () => {
   assert.match(html, /id="name"/);
   assert.match(html, /id="usdz"/);
   assert.match(html, /id="publish"/);
+  assert.match(html, /private model storage/);
   for (const gone of [
     "Unlock", "GitHub token", "Personal access token", "Load this id",
     "Thumbnail", "FAQ", "Placement", "Animated", "Share link", "Will be written",
-    "qrcode", "How to publish"
+    "How to publish", "examples list", "api.github.com"
   ]) {
     assert.equal(html.includes(gone), false, gone);
+    assert.equal(js.includes(gone), false, gone);
   }
   assert.equal(js.includes("GATE_SHA256"), false);
   assert.equal(js.includes("loadExisting"), false);
-  assert.equal(Object.hasOwn(api, "GATE_SHA256"), false);
+  assert.equal(api.UPLOAD_URL, "https://superimmersive-intake.superimmersive.workers.dev");
+  assert.match(html, /id="qr-canvas"/);
+  assert.match(html, /id="qr-link"/);
+  assert.match(html, /src="\.\.\/\.\.\/js\/qrcode\.min\.js"/);
+  assert.match(js, /toCanvas/);
+  assert.equal(api.launchUrl("garden-lamp"), "https://superimmersive.io/ar?model=garden-lamp");
 });
 
-test("catalog.json round-trips without touching example entries", () => {
-  assert.equal(api.stringifyJson(JSON.parse(originalCatalog)), originalCatalog);
+test("the launch link is the App Clip address and the QR library can draw it", async () => {
+  const QRCode = require("../../js/qrcode.min.js");
+  const url = api.launchUrl("garden-lamp");
+  const created = QRCode.create(url);
+  const encoded = created.segments.map(function (segment) {
+    return typeof segment.data === "string" ? segment.data : Buffer.from(segment.data).toString("utf8");
+  }).join("");
+  assert.equal(encoded, url);
+  const svg = await QRCode.toString(url, { type: "svg", margin: 1 });
+  assert.match(svg, /<svg/);
 });
 
-test("a name becomes an examples-list entry", () => {
+test("a name becomes a private object key", () => {
   assert.equal(api.slugify("Axel Flux Motor"), "axel-flux-motor");
   assert.equal(api.slugify("  Hello, World! "), "hello-world");
   const prepared = api.prepareModel({ name: "Garden Lamp", sizeBytes: 1200 });
   assert.equal(prepared.id, "garden-lamp");
-  assert.equal(prepared.modelUrl, "https://superimmersive.io/models/garden-lamp.usdz");
-  assert.equal(prepared.entry.placement, "floor");
-  assert.equal(prepared.entry.animated, false);
-  assert.equal(prepared.sidecar.name, "Garden Lamp");
+  assert.equal(prepared.key, "models/garden-lamp.usdz");
+  assert.deepEqual(prepared.sidecar, { name: "Garden Lamp" });
   assert.equal(Object.keys(prepared.sidecar).length, 1);
-  assert.equal(Object.prototype.hasOwnProperty.call(prepared.entry, "animationMode"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(prepared.entry, "faq"), false);
-});
-
-test("adding a model keeps every current catalog entry", () => {
-  const prepared = api.prepareModel(sample());
-  const added = api.applyCatalog(originalCatalog, prepared.entry, true);
-  assert.equal(added.action, "add");
-  const parsed = JSON.parse(added.text);
-  assert.deepEqual(parsed.slice(0, -1), JSON.parse(originalCatalog));
-  assert.equal(parsed.at(-1).id, "garden-lamp");
-  const again = api.applyCatalog(added.text, prepared.entry, true);
-  assert.equal(again.changed, false);
-  const removed = api.applyCatalog(added.text, prepared.entry, false);
-  assert.equal(removed.text, originalCatalog);
-  const absent = api.applyCatalog(originalCatalog, prepared.entry, false);
-  assert.equal(absent.changed, false);
-  assert.equal(absent.text, originalCatalog);
 });
 
 test("reserved example ids are refused", () => {
   assert.match(api.validateId("biplane"), /example/);
-  assert.throws(() => api.prepareModel(sample({ id: "test-box", name: "Test Box" })), /example/);
-  assert.throws(() => api.prepareModel(sample({ id: "robot" })), /example/);
-  assert.throws(() => api.prepareModel(sample({ id: "axel-flux-motor" })), /example/);
+  assert.throws(() => api.prepareModel({ name: "Biplane", sizeBytes: 1 }), /example/);
+  assert.throws(() => api.prepareModel({ name: "Test Box", sizeBytes: 1 }), /example/);
+  assert.throws(() => api.prepareModel({ name: "Robot", sizeBytes: 1 }), /example/);
+  assert.throws(() => api.prepareModel({ name: "Axel Flux Motor", sizeBytes: 1 }), /example/);
   assert.throws(() => api.prepareModel({ name: "!!!" }), /name/);
 });
 
-test("bundled and duplicate catalog rows are refused", () => {
-  const entry = api.prepareModel(sample({ id: "custom-box", name: "Custom Box", animated: false })).entry;
-  assert.throws(() => api.applyCatalog(JSON.stringify([
-    { id: "custom-box", bundled: true, name: "Custom Box" }
-  ]), entry, true), /bundled/);
-  assert.throws(() => api.applyCatalog(JSON.stringify([
-    { id: "custom-box", name: "A" },
-    { id: "custom-box", name: "B" }
-  ]), entry, true), /more than once/);
-});
-
-test("base64 matches the file bytes, including a chunk larger than 32 KB", () => {
-  const bytes = new Uint8Array(40000);
-  for (let i = 0; i < bytes.length; i++) bytes[i] = i % 256;
-  assert.equal(api.bytesToBase64(bytes), Buffer.from(bytes).toString("base64"));
-  const wrapped = api.bytesToBase64(Buffer.from("catalog\n", "utf8")).replace(/(.{10})/g, "$1\n");
-  assert.equal(api.decodeBase64ToString(wrapped), "catalog\n");
-});
-
-test("a file over 70 MB is refused", () => {
+test("a file over 70 MB is refused before upload", async () => {
   assert.equal(api.sizeWarning(1000), "");
-  assert.equal(api.sizeWarning(50 * 1024 * 1024), "");
   assert.match(api.sizeWarning(api.MAX_BYTES + 1), /70 MB/);
+  let called = false;
+  await assert.rejects(() => api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: { length: api.MAX_BYTES + 1 },
+    fetch: function () { called = true; }
+  }), /70 MB/);
+  assert.equal(called, false);
+  await assert.rejects(() => api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: new Uint8Array(),
+    fetch: function () { throw new Error("should not upload"); }
+  }), /Choose a USDZ/);
 });
 
-test("the App Clip page downloads catalog models and still serves the bundled test box", () => {
-  const html = fs.readFileSync(path.join(root, "ar", "index.html"), "utf8");
-  assert.match(html, /\/models\/" \+ id \+ "\.usdz"/);
-  assert.match(html, /\/ar\/models\/test-box\.usdz/);
-  assert.doesNotMatch(html, /a\.href = "\/ar\/models\/" \+ id/);
+test("publish posts the USDZ to the intake worker and nowhere else", async () => {
+  const model = new Uint8Array([1, 2, 3, 255]);
+  let upload;
+  const result = await api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: model,
+    fetch: async function (url, init) {
+      upload = { url: url, method: init.method, body: init.body };
+      const file = init.body.get("file");
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      assert.deepEqual(bytes, model);
+      assert.equal(file.name, "garden-lamp.usdz");
+      assert.equal(init.body.get("name"), "Garden Lamp");
+      return new Response(JSON.stringify({
+        id: "garden-lamp",
+        key: "models/garden-lamp.usdz",
+        bytes: model.length,
+        name: "Garden Lamp"
+      }), { status: 200, headers: { "content-type": "application/json" } });
+    }
+  });
+  assert.equal(upload.url, api.UPLOAD_URL);
+  assert.equal(upload.method, "POST");
+  assert.equal(result.id, "garden-lamp");
+  assert.equal(result.key, "models/garden-lamp.usdz");
 });
 
-function githubDouble(initialCatalog) {
-  const calls = [];
-  let refSha = "1".repeat(40);
-  let refFailuresLeft = 0;
-  let blobN = 0;
-  let commitN = 0;
-  const blobStore = new Map();
-  const usdz = new Map();
+test("a storage error is shown and a mismatched confirmation is refused", async () => {
+  await assert.rejects(() => api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: new Uint8Array([1]),
+    fetch: async function () {
+      return new Response(JSON.stringify({ error: "Choose a .usdz file." }), { status: 400 });
+    }
+  }), /Choose a \.usdz file/);
 
-  function putBlob(encoding, content) {
-    blobN += 1;
-    const sha = "b" + String(blobN).padStart(39, "0");
-    blobStore.set(sha, { encoding: encoding, content: content });
-    return sha;
-  }
+  await assert.rejects(() => api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: new Uint8Array([1]),
+    fetch: async function () {
+      return new Response(JSON.stringify({ id: "other", key: "models/other.usdz" }), { status: 200 });
+    }
+  }), /did not confirm/);
 
-  const catalogSha = putBlob("base64", Buffer.from(initialCatalog, "utf8").toString("base64"));
+  await assert.rejects(() => api.publishModel({
+    name: "Garden Lamp",
+    modelBytes: new Uint8Array([1]),
+    fetch: async function () { throw new Error("offline"); }
+  }), /Could not reach model storage/);
+});
 
-  function json(data, status) {
-    const code = status || 200;
-    return {
-      ok: code >= 200 && code < 300,
-      status: code,
-      statusText: code === 200 ? "OK" : "Error",
-      async text() { return JSON.stringify(data); }
-    };
-  }
+test("the worker stores the USDZ and the name, and removes a half-written model", async () => {
+  const worker = await import("./worker/src/index.js");
+  const model = new Uint8Array([9, 8, 7, 6]);
+  const bucket = memoryBucket();
+  const response = await worker.handle(await uploadRequest("Garden Lamp", "photo.usdz", model), { MODELS: bucket });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.deepEqual(body, {
+    id: "garden-lamp",
+    key: "models/garden-lamp.usdz",
+    bytes: 4,
+    name: "Garden Lamp"
+  });
+  assert.equal(response.headers.get("access-control-allow-origin"), "https://superimmersive.io");
+  assert.deepEqual(bucket.store.get("models/garden-lamp.usdz").bytes, Buffer.from(model));
+  assert.deepEqual(JSON.parse(bucket.store.get("models/garden-lamp.json").bytes.toString("utf8")), { name: "Garden Lamp" });
 
-  async function fetchImpl(url, opts) {
-    const method = (opts && opts.method) || "GET";
-    const body = opts && opts.body ? JSON.parse(opts.body) : null;
-    const token = opts.headers.Authorization.replace(/^Bearer /, "");
-    assert.equal(url.startsWith("https://api.github.com/"), true);
-    assert.equal(url.includes(token), false);
-    calls.push({ url: url, method: method, body: body });
+  const failed = memoryBucket();
+  failed.failOn = "models/garden-lamp.json";
+  const broken = await worker.handle(await uploadRequest("Garden Lamp", "lamp.usdz", model), { MODELS: failed });
+  assert.equal(broken.status, 502);
+  assert.equal(failed.store.has("models/garden-lamp.usdz"), false);
+  assert.equal(failed.deleted.includes("models/garden-lamp.usdz"), true);
+});
 
-    if (url === "https://api.github.com/user") return json({ login: "devon" });
-    if (url === api.repoUrl("") && method === "GET") {
-      return json({ default_branch: "main", permissions: { push: true } });
-    }
-    if (url === api.repoUrl("/git/ref/heads/main") && method === "GET") {
-      return json({ object: { sha: refSha } });
-    }
-    if (method === "GET" && url === api.repoUrl("/git/commits/" + refSha)) {
-      return json({ sha: refSha, tree: { sha: "tree-root" } });
-    }
-    if (url === api.repoUrl("/git/trees/tree-root")) {
-      return json({ tree: [{ path: "models", type: "tree", sha: "tree-models" }] });
-    }
-    if (url === api.repoUrl("/git/trees/tree-models")) {
-      const tree = [{ path: "catalog.json", type: "blob", sha: catalogSha, size: Buffer.byteLength(initialCatalog) }];
-      usdz.forEach(function (info, name) {
-        tree.push({ path: name, type: "blob", sha: info.sha, size: info.size });
-      });
-      return json({ tree: tree });
-    }
-    if (method === "GET" && url.indexOf("/git/blobs/") !== -1) {
-      const sha = url.slice(url.lastIndexOf("/") + 1);
-      const blob = blobStore.get(sha);
-      const content = blob.encoding === "base64" ? blob.content.replace(/(.{60})/g, "$1\n") : blob.content;
-      return json({ content: content, encoding: blob.encoding, sha: sha });
-    }
-    if (url === api.repoUrl("/git/blobs") && method === "POST") {
-      return json({ sha: putBlob(body.encoding, body.content) });
-    }
-    if (url === api.repoUrl("/git/trees") && method === "POST") {
-      return json({ sha: "tree-new-" + blobN });
-    }
-    if (url === api.repoUrl("/git/commits") && method === "POST") {
-      commitN += 1;
-      assert.equal(JSON.stringify(body).includes(token), false);
-      return json({ sha: "c".repeat(39) + String(commitN) });
-    }
-    if (url === api.repoUrl("/git/refs/heads/main") && method === "PATCH") {
-      assert.equal(body.force, false);
-      if (refFailuresLeft > 0) {
-        refFailuresLeft -= 1;
-        refSha = "2".repeat(40);
-        return json({ message: "Update is not a fast forward" }, 422);
-      }
-      refSha = body.sha;
-      return json({ object: { sha: body.sha } });
-    }
-    throw new Error("Unexpected " + method + " " + url);
-  }
+test("a stored model returns a ten-minute download link and the file", async () => {
+  const worker = await import("./worker/src/index.js");
+  const model = new Uint8Array([9, 8, 7, 6]);
+  const bucket = memoryBucket();
+  const env = { MODELS: bucket, DOWNLOAD_SECRET: "test-download-secret" };
+  const stored = await worker.handle(await uploadRequest("Garden Lamp", "lamp.usdz", model), env);
+  assert.equal(stored.status, 200);
 
+  const linkResponse = await worker.handle(new Request(api.UPLOAD_URL + "/models/garden-lamp"), env);
+  assert.equal(linkResponse.status, 200);
+  assert.equal(linkResponse.headers.get("cache-control"), "private, no-store");
+  const link = await linkResponse.json();
+  assert.equal(link.id, "garden-lamp");
+  const downloadUrl = new URL(link.url);
+  assert.equal(downloadUrl.origin + downloadUrl.pathname, api.UPLOAD_URL + "/models/garden-lamp.usdz");
+  const exp = Number(downloadUrl.searchParams.get("exp"));
+  assert.ok(exp > Math.floor(Date.now() / 1000) + worker.LINK_TTL_SECONDS - 5);
+  assert.equal(link.expiresAt, new Date(exp * 1000).toISOString());
+
+  const file = await worker.handle(new Request(link.url), env);
+  assert.equal(file.status, 200);
+  assert.equal(file.headers.get("content-type"), "model/vnd.usdz+zip");
+  assert.deepEqual(new Uint8Array(await file.arrayBuffer()), model);
+
+  const staleExp = String(Math.floor(Date.now() / 1000) - 120);
+  const staleSig = await worker.signDownload("garden-lamp", staleExp, env.DOWNLOAD_SECRET);
+  const stale = new URL(link.url);
+  stale.searchParams.set("exp", staleExp);
+  stale.searchParams.set("sig", staleSig);
+  const expired = await worker.handle(new Request(stale), env);
+  assert.equal(expired.status, 403);
+
+  const tampered = new URL(link.url);
+  tampered.searchParams.set("sig", "ab".repeat(32));
+  const rejected = await worker.handle(new Request(tampered), env);
+  assert.equal(rejected.status, 403);
+
+  const missing = await worker.handle(new Request(api.UPLOAD_URL + "/models/other-lamp"), env);
+  assert.equal(missing.status, 404);
+  const foreign = await worker.handle(new Request(api.UPLOAD_URL + "/models/garden-lamp", {
+    headers: { Origin: "https://example.com" }
+  }), env);
+  assert.equal(foreign.status, 403);
+});
+
+test("the worker refuses other sites, other files, and example names", async () => {
+  const worker = await import("./worker/src/index.js");
+  const bucket = memoryBucket();
+  const model = new Uint8Array([1]);
+
+  const foreign = await worker.handle(await uploadRequest("Garden Lamp", "lamp.usdz", model, "https://example.com"), { MODELS: bucket });
+  assert.equal(foreign.status, 403);
+  assert.equal(bucket.store.size, 0);
+
+  const text = await worker.handle(await uploadRequest("Garden Lamp", "notes.txt", model), { MODELS: bucket });
+  assert.equal(text.status, 400);
+
+  const example = await worker.handle(await uploadRequest("Biplane", "biplane.usdz", model), { MODELS: bucket });
+  assert.equal(example.status, 400);
+
+  const empty = await worker.handle(await uploadRequest("Garden Lamp", "lamp.usdz", new Uint8Array()), { MODELS: bucket });
+  assert.equal(empty.status, 400);
+  assert.equal(bucket.store.size, 0);
+
+  const options = await worker.handle(new Request(api.UPLOAD_URL, {
+    method: "OPTIONS",
+    headers: { Origin: "https://superimmersive.github.io" }
+  }), { MODELS: bucket });
+  assert.equal(options.status, 204);
+  assert.equal(options.headers.get("access-control-allow-origin"), "https://superimmersive.github.io");
+});
+
+function memoryBucket() {
+  const store = new Map();
+  const deleted = [];
   return {
-    fetchImpl: fetchImpl,
-    calls: calls,
-    usdz: usdz,
-    failNextRef: function () { refFailuresLeft = 1; },
-    blobStore: blobStore
+    store: store,
+    deleted: deleted,
+    failOn: "",
+    async put(key, value) {
+      if (key === this.failOn) throw new Error("sidecar failed");
+      let bytes;
+      if (typeof value === "string") bytes = Buffer.from(value);
+      else if (value instanceof Uint8Array) bytes = Buffer.from(value);
+      else if (value && typeof value.arrayBuffer === "function") bytes = Buffer.from(await value.arrayBuffer());
+      else bytes = Buffer.from(await new Response(value).arrayBuffer());
+      store.set(key, { bytes: bytes });
+    },
+    async delete(key) {
+      deleted.push(key);
+      store.delete(key);
+    },
+    async head(key) {
+      const item = store.get(key);
+      return item ? { size: item.bytes.length } : null;
+    },
+    async get(key) {
+      const item = store.get(key);
+      return item ? { body: item.bytes, size: item.bytes.length } : null;
+    }
   };
 }
 
-function posts(calls, suffix, method) {
-  return calls.filter(function (call) {
-    return call.method === (method || "POST") && call.url === api.repoUrl(suffix);
+async function uploadRequest(name, filename, bytes, origin) {
+  const form = new FormData();
+  form.set("name", name);
+  form.set("file", new File([bytes], filename, { type: "application/octet-stream" }));
+  return new Request(api.UPLOAD_URL, {
+    method: "POST",
+    headers: { Origin: origin || "https://superimmersive.io" },
+    body: form
   });
 }
-
-test("publish commits the USDZ, sidecar, and catalog in one shot", async () => {
-  const github = githubDouble(originalCatalog);
-  const model = new Uint8Array([1, 2, 3, 255]);
-  const prepared = api.prepareModel(sample({ sizeBytes: 0 }));
-  const result = await api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: prepared,
-    modelBytes: model,
-    fetch: github.fetchImpl
-  });
-  assert.equal(result.login, "devon");
-  assert.equal(result.branch, "main");
-  assert.equal(result.shareUrl, "https://superimmersive.io/ar?model=garden-lamp");
-  assert.equal(result.unchanged, false);
-  const trees = posts(github.calls, "/git/trees");
-  assert.equal(trees.length, 1);
-  const paths = trees[0].body.tree.map(function (item) { return item.path; }).sort();
-  assert.deepEqual(paths, [
-    "ar/models/garden-lamp.json",
-    "models/catalog.json",
-    "models/garden-lamp.usdz"
-  ]);
-  const blobs = posts(github.calls, "/git/blobs");
-  const usdzBlob = blobs.find(function (call) { return call.body.encoding === "base64" && call.body.content.startsWith(api.bytesToBase64(model).slice(0, 8)); });
-  assert.ok(usdzBlob);
-  assert.equal(Buffer.from(usdzBlob.body.content, "base64").equals(Buffer.from(model)), true);
-  const catalogBlob = blobs.find(function (call) { return call.body.encoding === "utf-8" && call.body.content.includes('"garden-lamp"') && call.body.content.includes('"test-box"'); });
-  assert.ok(catalogBlob);
-  const published = JSON.parse(catalogBlob.body.content);
-  assert.deepEqual(published.slice(0, -1), JSON.parse(originalCatalog));
-  assert.equal(published.at(-1).sizeBytes, 4);
-  assert.equal(published.at(-1).placement, "floor");
-  assert.equal(published.at(-1).animated, false);
-  const sidecarBlob = blobs.find(function (call) {
-    return call.body.encoding === "utf-8" && String(call.body.content).trim().startsWith("{");
-  });
-  assert.deepEqual(JSON.parse(sidecarBlob.body.content), { name: "Garden Lamp" });
-  const commit = posts(github.calls, "/git/commits")[0].body;
-  assert.deepEqual(commit.parents, ["1".repeat(40)]);
-  assert.match(commit.message, /Publish AR model garden-lamp/);
-  assert.equal(commit.message.includes("github_pat_"), false);
-  const ref = github.calls.find(function (call) { return call.method === "PATCH"; });
-  assert.equal(ref.body.force, false);
-});
-
-test("publishing again without a new file keeps the USDZ and stays listed", async () => {
-  const listed = api.applyCatalog(originalCatalog, api.prepareModel(sample()).entry, true).text;
-  const github = githubDouble(listed);
-  github.usdz.set("garden-lamp.usdz", { sha: "existing-usdz", size: 4321 });
-  const prepared = api.prepareModel(sample({ name: "Garden Lamp Revised", sizeBytes: 1 }));
-  const result = await api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: prepared,
-    fetch: github.fetchImpl
-  });
-  assert.equal(result.catalogAction, "update");
-  const paths = posts(github.calls, "/git/trees")[0].body.tree.map(function (item) { return item.path; });
-  assert.equal(paths.includes("models/garden-lamp.usdz"), false);
-  const catalogCall = posts(github.calls, "/git/blobs").find(function (call) {
-    return call.body.encoding === "utf-8" && String(call.body.content).indexOf('"test-box"') !== -1;
-  });
-  const published = JSON.parse(catalogCall.body.content);
-  const row = published.find(function (item) { return item.id === "garden-lamp"; });
-  assert.equal(row.name, "Garden Lamp Revised");
-  assert.equal(row.sizeBytes, 4321);
-});
-
-test("every publish adds the catalog row", async () => {
-  const github = githubDouble(originalCatalog);
-  const result = await api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: api.prepareModel(sample({ sizeBytes: 0 })),
-    modelBytes: new Uint8Array([4, 5]),
-    fetch: github.fetchImpl
-  });
-  assert.equal(result.listed, true);
-  const paths = posts(github.calls, "/git/trees")[0].body.tree.map(function (item) { return item.path; });
-  assert.deepEqual(paths.sort(), ["ar/models/garden-lamp.json", "models/catalog.json", "models/garden-lamp.usdz"]);
-});
-
-test("a lost race retries once and the second commit parents the new head", async () => {
-  const github = githubDouble(originalCatalog);
-  github.failNextRef();
-  await api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: api.prepareModel(sample({ sizeBytes: 0 })),
-    modelBytes: new Uint8Array([1]),
-    fetch: github.fetchImpl
-  });
-  const commits = posts(github.calls, "/git/commits");
-  assert.equal(commits.length, 2);
-  assert.deepEqual(commits[0].body.parents, ["1".repeat(40)]);
-  assert.deepEqual(commits[1].body.parents, ["2".repeat(40)]);
-  const patches = github.calls.filter(function (call) { return call.method === "PATCH"; });
-  assert.equal(patches.length, 2);
-  assert.equal(patches.every(function (call) { return call.body.force === false; }), true);
-});
-
-test("missing files and a token that cannot push fail before a commit", async () => {
-  const github = githubDouble(originalCatalog);
-  await assert.rejects(() => api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: api.prepareModel(sample({ sizeBytes: 0 })),
-    fetch: github.fetchImpl
-  }), /Choose a USDZ/);
-  assert.equal(posts(github.calls, "/git/commits").length, 0);
-
-  await assert.rejects(() => api.publishModel({
-    token: "github_pat_test_token_value",
-    prepared: api.prepareModel(sample()),
-    modelBytes: { length: api.MAX_BYTES + 1 },
-    fetch: function () { throw new Error("should not upload"); }
-  }), /70 MB/);
-
-  await assert.rejects(() => api.verifyToken("github_pat_test_token_value", async function (url) {
-    if (url.endsWith("/user")) {
-      return { ok: true, status: 200, async text() { return JSON.stringify({ login: "devon" }); } };
-    }
-    return {
-      ok: true,
-      status: 200,
-      async text() { return JSON.stringify({ default_branch: "main", permissions: { push: false } }); }
-    };
-  }), /cannot push/);
-});

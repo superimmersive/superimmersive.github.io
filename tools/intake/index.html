@@ -43,12 +43,16 @@
     button:disabled { opacity: 0.55; cursor: progress; }
     #status { margin-top: 1rem; min-height: 1.5rem; }
     #status.error { color: #f0b4b4; }
+    #qr { margin-top: 1.25rem; }
+    #qr[hidden] { display: none; }
+    #qr canvas { display: block; width: 220px; height: 220px; border-radius: 12px; }
+    #qr a { display: inline-block; margin-top: 0.75rem; color: #f8fafc; word-break: break-all; }
   </style>
 </head>
 <body>
   <main>
     <h1>Add a model</h1>
-    <p>Publishes the USDZ into the AR app examples list.</p>
+    <p>Stores the USDZ in private model storage.</p>
     <form id="app">
       <label for="name">Name</label>
       <input id="name" type="text" maxlength="120" autocomplete="off" required placeholder="Garden lamp">
@@ -56,8 +60,13 @@
       <input id="usdz" type="file" accept=".usdz,model/vnd.usdz+zip" required>
       <div><button id="publish" type="submit">Publish</button></div>
       <p id="status" role="status"></p>
+      <div id="qr" hidden>
+        <canvas id="qr-canvas" width="220" height="220" aria-label="App Clip QR code"></canvas>
+        <a id="qr-link" href=""></a>
+      </div>
     </form>
   </main>
+  <script src="../../js/qrcode.min.js"></script>
   <script src="intake.js"></script>
 </body>
 </html>

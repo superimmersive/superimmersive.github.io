@@ -1,0 +1,13 @@
+{
+  "name": "superimmersive-intake",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-09",
+  "account_id": "31ddcce83861787adde1f21fadcaef85",
+  "workers_dev": true,
+  "r2_buckets": [
+    {
+      "binding": "MODELS",
+      "bucket_name": "superimmersive-client-models"
+    }
+  ]
+}
