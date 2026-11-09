@@ -1,6 +1,5 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const api = require("./intake.js");
@@ -28,14 +27,14 @@ function sample(overrides) {
   }, overrides);
 }
 
-test("passphrase on the page matches the README and the stored hash", () => {
-  const readme = fs.readFileSync(path.join(__dirname, "README.md"), "utf8");
+test("the form is visible without a passphrase gate", () => {
   const html = fs.readFileSync(path.join(__dirname, "index.html"), "utf8");
-  const phrase = readme.match(/Initial passphrase: `([^`]+)`/);
-  assert.ok(phrase, "README should name the initial passphrase");
-  assert.ok(html.includes(phrase[1]));
-  const hash = crypto.createHash("sha256").update(phrase[1]).digest("hex");
-  assert.equal(api.GATE_SHA256, hash);
+  const js = fs.readFileSync(path.join(__dirname, "intake.js"), "utf8");
+  assert.equal(html.includes('id="gate"'), false);
+  assert.equal(html.includes("Unlock"), false);
+  assert.match(html, /<div id="app">/);
+  assert.equal(js.includes("GATE_SHA256"), false);
+  assert.equal(Object.hasOwn(api, "GATE_SHA256"), false);
 });
 
 test("catalog.json round-trips without touching example entries", () => {

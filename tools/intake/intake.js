@@ -15,8 +15,7 @@
     api: "https://api.github.com"
   };
   var RESERVED_IDS = ["test-box", "biplane", "robot", "axel-flux-motor"];
-  var GATE_SHA256 = "a59a4123ab1def4ee5d0204826a33d984e09db8052fc24155884092839eb05c4";
-  var STORAGE = { gate: "si-intake-gate", pat: "si-intake-pat" };
+  var STORAGE = { pat: "si-intake-pat" };
   var WARN_BYTES = 8 * 1024 * 1024;
   var STRONG_WARN_BYTES = 50 * 1024 * 1024;
   var MAX_BYTES = 70 * 1024 * 1024;
@@ -445,12 +444,9 @@
   }
 
   function mount() {
-    var gate = document.getElementById("gate");
     var app = document.getElementById("app");
-    if (!gate || !app) return;
+    if (!app) return;
 
-    var gatePass = document.getElementById("gate-pass");
-    var gateError = document.getElementById("gate-error");
     var patInput = document.getElementById("pat");
     var patStatus = document.getElementById("pat-status");
     var usdzInput = document.getElementById("usdz");
@@ -646,23 +642,7 @@
       }
     }
 
-    async function unlock() {
-      var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(gatePass.value.trim()));
-      var hex = Array.prototype.map.call(new Uint8Array(digest), function (b) {
-        return b.toString(16).padStart(2, "0");
-      }).join("");
-      if (hex !== GATE_SHA256) {
-        gateError.textContent = "That passphrase does not match.";
-        return;
-      }
-      sessionStorage.setItem(STORAGE.gate, "1");
-      gateError.textContent = "";
-      openApp();
-    }
-
     function openApp() {
-      gate.hidden = true;
-      app.hidden = false;
       if (!booted) {
         booted = true;
         if (!faqList.children.length) addFaqRow("", "");
@@ -768,11 +748,6 @@
         setStatus(friendly(error), true);
       }
     }
-
-    document.getElementById("gate-form").addEventListener("submit", function (event) {
-      event.preventDefault();
-      unlock();
-    });
 
     document.getElementById("pat-form").addEventListener("submit", function (event) {
       event.preventDefault();
@@ -927,8 +902,7 @@
       }
     });
 
-    if (sessionStorage.getItem(STORAGE.gate) === "1") openApp();
-    else gatePass.focus();
+    openApp();
   }
 
   if (typeof document !== "undefined") {
@@ -940,7 +914,6 @@
     SITE: SITE,
     GITHUB: GITHUB,
     RESERVED_IDS: RESERVED_IDS,
-    GATE_SHA256: GATE_SHA256,
     STORAGE: STORAGE,
     MAX_BYTES: MAX_BYTES,
     IntakeError: IntakeError,

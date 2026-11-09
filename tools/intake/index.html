@@ -147,9 +147,6 @@
 
     <details class="card help">
       <summary>How to publish and test</summary>
-      <h2>Passphrase</h2>
-      <p>The gate passphrase is <code>george-studio-intake</code>. It only stops a casual visit. This repository is public, so the passphrase is not a secret. Publishing still needs your GitHub token.</p>
-      <p>To change it, replace <code>GATE_SHA256</code> in <code>tools/intake/intake.js</code> with the SHA-256 of the new phrase, update this page and <code>tools/intake/README.md</code>, and ship that change. The token is never written into the repo.</p>
       <h2>GitHub token</h2>
       <ol>
         <li>Open <a href="https://github.com/settings/personal-access-tokens/new">fine-grained tokens</a>. Resource owner: <code>superimmersive</code>. Repository: only <code>superimmersive.github.io</code>.</li>
@@ -174,20 +171,7 @@
       <p>A clip already associated in App Store Connect can open the same link without a Local Experience. The association file is unchanged.</p>
     </details>
 
-    <section id="gate" class="card">
-      <h2>Studio gate</h2>
-      <p class="hint">Passphrase <code>george-studio-intake</code>. It is remembered for this tab.</p>
-      <form id="gate-form">
-        <label for="gate-pass">Passphrase</label>
-        <input id="gate-pass" type="password" autocomplete="current-password" required>
-        <p id="gate-error" class="error" role="alert"></p>
-        <div class="actions">
-          <button class="btn btn--primary" type="submit">Unlock</button>
-        </div>
-      </form>
-    </section>
-
-    <div id="app" hidden>
+    <div id="app">
       <section class="card">
         <h2>GitHub token</h2>
         <p class="hint">Fine-grained, this repository only, Contents Read and write. A classic token with the <code>repo</code> scope also works and is broader than you need.</p>

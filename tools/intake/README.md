@@ -6,19 +6,7 @@ Devon uses it to put a product on the Superimmersive AR app without a manual com
 
 `/tools/` is already disallowed in `robots.txt`. The page also sends `noindex`.
 
-## Passphrase
-
-Initial passphrase: `george-studio-intake`
-
-It is a speed bump for someone who stumbles on the URL. This repo is public, so do not treat the phrase as a secret. The GitHub token is what stops a publish.
-
-The page keeps the unlock in `sessionStorage` for the tab. To rotate the phrase:
-
-```bash
-node -e "console.log(require('crypto').createHash('sha256').update('NEW PHRASE').digest('hex'))"
-```
-
-Put that hex in `GATE_SHA256` in `tools/intake/intake.js`, replace the phrase on the page and in this file, and ship the change. Do not commit the token.
+The passphrase gate is off for now. The form is visible as soon as the page loads. The GitHub token is what stops a publish.
 
 ## GitHub token
 
