@@ -154,6 +154,51 @@ test("the worker stores the USDZ and the name, and removes a half-written model"
   assert.equal(failed.deleted.includes("models/garden-lamp.usdz"), true);
 });
 
+test("a stored model returns a ten-minute download link and the file", async () => {
+  const worker = await import("./worker/src/index.js");
+  const model = new Uint8Array([9, 8, 7, 6]);
+  const bucket = memoryBucket();
+  const env = { MODELS: bucket, DOWNLOAD_SECRET: "test-download-secret" };
+  const stored = await worker.handle(await uploadRequest("Garden Lamp", "lamp.usdz", model), env);
+  assert.equal(stored.status, 200);
+
+  const linkResponse = await worker.handle(new Request(api.UPLOAD_URL + "/models/garden-lamp"), env);
+  assert.equal(linkResponse.status, 200);
+  assert.equal(linkResponse.headers.get("cache-control"), "private, no-store");
+  const link = await linkResponse.json();
+  assert.equal(link.id, "garden-lamp");
+  const downloadUrl = new URL(link.url);
+  assert.equal(downloadUrl.origin + downloadUrl.pathname, api.UPLOAD_URL + "/models/garden-lamp.usdz");
+  const exp = Number(downloadUrl.searchParams.get("exp"));
+  assert.ok(exp > Math.floor(Date.now() / 1000) + worker.LINK_TTL_SECONDS - 5);
+  assert.equal(link.expiresAt, new Date(exp * 1000).toISOString());
+
+  const file = await worker.handle(new Request(link.url), env);
+  assert.equal(file.status, 200);
+  assert.equal(file.headers.get("content-type"), "model/vnd.usdz+zip");
+  assert.deepEqual(new Uint8Array(await file.arrayBuffer()), model);
+
+  const staleExp = String(Math.floor(Date.now() / 1000) - 120);
+  const staleSig = await worker.signDownload("garden-lamp", staleExp, env.DOWNLOAD_SECRET);
+  const stale = new URL(link.url);
+  stale.searchParams.set("exp", staleExp);
+  stale.searchParams.set("sig", staleSig);
+  const expired = await worker.handle(new Request(stale), env);
+  assert.equal(expired.status, 403);
+
+  const tampered = new URL(link.url);
+  tampered.searchParams.set("sig", "ab".repeat(32));
+  const rejected = await worker.handle(new Request(tampered), env);
+  assert.equal(rejected.status, 403);
+
+  const missing = await worker.handle(new Request(api.UPLOAD_URL + "/models/other-lamp"), env);
+  assert.equal(missing.status, 404);
+  const foreign = await worker.handle(new Request(api.UPLOAD_URL + "/models/garden-lamp", {
+    headers: { Origin: "https://example.com" }
+  }), env);
+  assert.equal(foreign.status, 403);
+});
+
 test("the worker refuses other sites, other files, and example names", async () => {
   const worker = await import("./worker/src/index.js");
   const bucket = memoryBucket();
@@ -200,6 +245,14 @@ function memoryBucket() {
     async delete(key) {
       deleted.push(key);
       store.delete(key);
+    },
+    async head(key) {
+      const item = store.get(key);
+      return item ? { size: item.bytes.length } : null;
+    },
+    async get(key) {
+      const item = store.get(key);
+      return item ? { body: item.bytes, size: item.bytes.length } : null;
     }
   };
 }

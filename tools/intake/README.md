@@ -13,6 +13,15 @@ The id is the name, lowercased, with spaces turned into hyphens. Uploading the s
 
 After the file is stored, the page draws a QR code for `https://superimmersive.io/ar?model=<id>` and shows that link. The code launches the App Clip. It does not contain the USDZ.
 
-The browser posts the file to `https://superimmersive-intake.superimmersive.workers.dev`. That Worker holds the only permission to write the bucket. It accepts uploads from `superimmersive.io` and `superimmersive.github.io`.
+The browser posts the file to `https://superimmersive-intake.superimmersive.workers.dev`. That Worker holds the only permission to read or write the bucket. It accepts uploads from `superimmersive.io` and `superimmersive.github.io`.
+
+The App Clip asks that same service for the file:
+
+| Request | Response |
+| --- | --- |
+| `GET /models/<id>` | `{ id, url, expiresAt }`. `url` downloads the USDZ and lasts 10 minutes. |
+| `GET /models/<id>.usdz?exp=…&sig=…` | The USDZ bytes, only while the signature is still valid. |
+
+A missing id returns 404. The bucket address is never returned.
 
 `/tools/` is disallowed in `robots.txt`. The page sends `noindex`.

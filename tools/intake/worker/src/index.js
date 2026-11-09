@@ -1,7 +1,10 @@
 /* Accepts a name and a USDZ from the intake page and stores both in the
    private superimmersive-client-models bucket. The browser never sees
-   the bucket credentials. */
+   the bucket credentials. A later GET for that id returns a download
+   link that lasts ten minutes. */
 var MAX_BYTES = 70 * 1024 * 1024;
+var LINK_TTL_SECONDS = 600;
+var CLOCK_SKEW_SECONDS = 60;
 var RESERVED_IDS = ["test-box", "biplane", "robot", "axel-flux-motor"];
 
 function slugify(name) {
@@ -40,7 +43,7 @@ function allowOrigin(origin) {
 
 function corsHeaders(origin) {
   var headers = {
-    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
     "access-control-allow-headers": "content-type",
     "access-control-max-age": "86400",
     vary: "Origin"
@@ -53,15 +56,58 @@ function corsHeaders(origin) {
 function json(body, status, origin) {
   var headers = corsHeaders(origin);
   headers["content-type"] = "application/json; charset=utf-8";
+  headers["cache-control"] = "private, no-store";
   return new Response(JSON.stringify(body), { status: status, headers: headers });
+}
+
+function safeEqual(left, right) {
+  var a = String(left || "");
+  var b = String(right || "");
+  if (a.length !== b.length) return false;
+  var diff = 0;
+  for (var i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function signDownload(id, exp, secret) {
+  var key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  var signed = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(id + "." + exp));
+  var bytes = new Uint8Array(signed);
+  var hex = "";
+  for (var i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, "0");
+  return hex;
+}
+
+async function verifyDownload(id, exp, sig, secret, nowMs) {
+  if (!/^[1-9][0-9]*$/.test(String(exp || ""))) return false;
+  var expiry = Number(exp);
+  var now = Math.floor(nowMs / 1000);
+  if (expiry < now - CLOCK_SKEW_SECONDS) return false;
+  if (expiry > now + LINK_TTL_SECONDS + CLOCK_SKEW_SECONDS) return false;
+  var expected = await signDownload(id, String(expiry), secret);
+  return safeEqual(expected, String(sig || "").toLowerCase());
+}
+
+function modelPath(pathname) {
+  var match = /^\/models\/([a-z0-9]+(?:-[a-z0-9]+)*)(\.usdz)?$/.exec(pathname);
+  if (!match) return null;
+  return { id: match[1], download: Boolean(match[2]) };
 }
 
 async function handle(request, env) {
   var origin = request.headers.get("origin") || "";
+  var url = new URL(request.url);
   if (request.method === "OPTIONS") {
     if (!allowOrigin(origin)) return json({ error: "This page cannot upload." }, 403, origin);
     return new Response(null, { status: 204, headers: corsHeaders(origin) });
   }
+  if (request.method === "GET") return download(url, env, origin);
   if (request.method !== "POST") return json({ error: "Send the USDZ with POST." }, 405, origin);
   if (!allowOrigin(origin)) return json({ error: "This page cannot upload." }, 403, origin);
 
@@ -106,5 +152,56 @@ async function handle(request, env) {
   return json({ id: id, key: usdzKey, bytes: size, name: name }, 200, origin);
 }
 
-export { MAX_BYTES, RESERVED_IDS, slugify, validateId, allowOrigin, handle };
+async function download(url, env, origin) {
+  if (origin && !allowOrigin(origin)) return json({ error: "This page cannot fetch models." }, 403, origin);
+  var parsed = modelPath(url.pathname);
+  if (!parsed) return json({ error: "That model id is not valid." }, 404, origin);
+  var idError = validateId(parsed.id);
+  if (idError) return json({ error: idError }, 400, origin);
+  if (!env.DOWNLOAD_SECRET) return json({ error: "Download links are not available." }, 500, origin);
+
+  var key = "models/" + parsed.id + ".usdz";
+  if (!parsed.download) {
+    var existing = await env.MODELS.head(key);
+    if (!existing) return json({ error: "That model is not stored." }, 404, origin);
+    var exp = String(Math.floor(Date.now() / 1000) + LINK_TTL_SECONDS);
+    var sig = await signDownload(parsed.id, exp, env.DOWNLOAD_SECRET);
+    var link = new URL("/models/" + parsed.id + ".usdz", url.origin);
+    link.searchParams.set("exp", exp);
+    link.searchParams.set("sig", sig);
+    return json({
+      id: parsed.id,
+      url: link.toString(),
+      expiresAt: new Date(Number(exp) * 1000).toISOString()
+    }, 200, origin);
+  }
+
+  var fresh = await verifyDownload(
+    parsed.id,
+    url.searchParams.get("exp"),
+    url.searchParams.get("sig"),
+    env.DOWNLOAD_SECRET,
+    Date.now()
+  );
+  if (!fresh) return json({ error: "This download link is not valid." }, 403, origin);
+  var object = await env.MODELS.get(key);
+  if (!object || object.body == null) return json({ error: "That model is not stored." }, 404, origin);
+  var headers = corsHeaders(origin);
+  headers["content-type"] = "model/vnd.usdz+zip";
+  headers["cache-control"] = "private, no-store";
+  if (object.size != null) headers["content-length"] = String(object.size);
+  return new Response(object.body, { status: 200, headers: headers });
+}
+
+export {
+  MAX_BYTES,
+  LINK_TTL_SECONDS,
+  RESERVED_IDS,
+  slugify,
+  validateId,
+  allowOrigin,
+  signDownload,
+  verifyDownload,
+  handle
+};
 export default { fetch: handle };
