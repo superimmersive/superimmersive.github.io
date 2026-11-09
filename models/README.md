@@ -16,13 +16,18 @@ An array of entries:
 | `sizeBytes` | file size, used for the download hint                                |
 | `placement` | default surface, `floor` or `wall`                                   |
 | `animated`  | true when the USDZ has a baked animation clip                        |
-| `animationMode` | `loop` (default) or `scrub` for exploded-view slider              |
+| `animationMode` | `scrub` for an exploded-view slider. Omit it for the default `loop`. |
 | `specText`  | optional plain-text product facts for the Ask chatbot                |
 | `faq`        | optional `{question,answer}` array for Ask                           |
+| `dimensions` | optional display size string, also shown to Ask                      |
+
+Every object in the array is an example. The app has no separate hidden flag.
+A product that should not appear in the Examples list is left out of this file
+and is still reachable from `?model=<id>` via its USDZ and `ar/models/<id>.json`.
 
 Per-model metadata for deep links (`?model=<id>`) also lives at
-`https://superimmersive.io/ar/models/<id>.json` (same fields as above plus
-`dimensions` / `details`). Mock specs there are for chatbot testing only.
+`https://superimmersive.io/ar/models/<id>.json`. It repeats the catalog fields
+and adds `details`. Mock specs there are for chatbot testing only.
 
 Keep every file under GitHub's 100 MB limit (ideally a few MB for fast App Clip loads).
 
