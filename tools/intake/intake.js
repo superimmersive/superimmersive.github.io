@@ -668,71 +668,10 @@
       return new Uint8Array(await blob.arrayBuffer());
     }
 
-    async function loadExisting() {
-      var id = idInput.value.trim();
-      var problem = validateId(id);
-      if (problem) {
-        setStatus(problem, true);
-        return;
-      }
-      setStatus("Loading " + id + "…");
-      result.hidden = true;
-      try {
-        var catalogRes = await fetch("/models/catalog.json", { cache: "no-store" });
-        if (!catalogRes.ok) throw new IntakeError("Could not read the catalog.");
-        var catalog = await catalogRes.json();
-        if (!Array.isArray(catalog)) throw new IntakeError("catalog.json is not a list.");
-        var entry = catalog.find(function (item) { return item && item.id === id; });
-        var sidecar = null;
-        var sideRes = await fetch("/ar/models/" + id + ".json", { cache: "no-store" });
-        if (sideRes.ok) sidecar = await sideRes.json();
-        if (!entry && !sidecar) {
-          loaded = null;
-          setStatus("No product with that id is on the site yet.");
-          refresh();
-          return;
-        }
-        if (entry && entry.bundled) {
-          setStatus("That model is bundled in the app and is not edited here.");
-          return;
-        }
-        nameInput.value = (entry && entry.name) || (sidecar && sidecar.name) || "";
-        idDirty = true;
-        idInput.value = id;
-        var placement = (entry && entry.placement) || (sidecar && sidecar.placement);
-        placementWall.checked = placement === "wall";
-        document.getElementById("placement-floor").checked = placement !== "wall";
-        var isAnimated = entry ? Boolean(entry.animated) : Boolean(sidecar && sidecar.animated);
-        animatedInput.checked = isAnimated;
-        var mode = (entry && entry.animationMode) || (sidecar && sidecar.animationMode);
-        modeScrub.checked = mode === "scrub";
-        document.getElementById("mode-loop").checked = mode !== "scrub";
-        examplesInput.checked = Boolean(entry);
-        dimensionsInput.value = (entry && entry.dimensions) || (sidecar && sidecar.dimensions) || "";
-        detailsInput.value = (sidecar && sidecar.details) || "";
-        specInput.value = (entry && entry.specText) || (sidecar && sidecar.specText) || "";
-        faqList.replaceChildren();
-        var faq = (entry && entry.faq) || (sidecar && sidecar.faq) || [];
-        if (!faq.length) addFaqRow("", "");
-        else faq.forEach(function (row) { addFaqRow(row.question, row.answer); });
-        loaded = {
-          id: id,
-          sizeBytes: (entry && entry.sizeBytes) || (sidecar && sidecar.sizeBytes) || 0
-        };
-        setStatus(entry
-          ? "Loaded from the catalog. Leave the USDZ empty to keep the current file."
-          : "Loaded the product info. This id is not in the Examples list.");
-        refresh();
-      } catch (error) {
-        setStatus(friendly(error), true);
-      }
-    }
-
     document.getElementById("faq-add").addEventListener("click", function () {
       addFaqRow("", "");
     });
 
-    document.getElementById("load-existing").addEventListener("click", loadExisting);
     document.getElementById("copy-url").addEventListener("click", function () {
       if (!shareInput.value) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {

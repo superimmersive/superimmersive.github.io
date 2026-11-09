@@ -30,7 +30,7 @@ Fields match the live catalog:
 
 `test-box`, `biplane`, `robot`, and `axel-flux-motor` are refused. `test-box` is bundled in the app. Leave those files alone.
 
-Leave the USDZ field empty to update text for an id that already has a file on the site. **Load this id from the site** fills the form from `catalog.json` and `ar/models/<id>.json`.
+Leave the USDZ field empty to update text for an id that already has a file on the site.
 
 The `/ar` fallback page now points Quick Look at `/models/<id>.usdz`. `test-box` still uses `/ar/models/test-box.usdz`. The App Clip association file is unchanged.
 
