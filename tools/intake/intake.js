@@ -1,8 +1,8 @@
 /* Studio intake for Superimmersive AR models.
    Publish path: the browser calls the GitHub Git Data API and makes one commit
-   on the default branch. The token stays in sessionStorage and is sent only to
-   api.github.com. Catalog fields match models/catalog.json. Ask text is mirrored
-   onto ar/models/<id>.json, which is the deep-link sidecar the app already fetches. */
+   on the default branch. The page does not ask for a token. Catalog fields match
+   models/catalog.json. Ask text is mirrored onto ar/models/<id>.json, which is
+   the deep-link sidecar the app already fetches. */
 (function (root, factory) {
   var api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
@@ -15,7 +15,6 @@
     api: "https://api.github.com"
   };
   var RESERVED_IDS = ["test-box", "biplane", "robot", "axel-flux-motor"];
-  var STORAGE = { pat: "si-intake-pat" };
   var WARN_BYTES = 8 * 1024 * 1024;
   var STRONG_WARN_BYTES = 50 * 1024 * 1024;
   var MAX_BYTES = 70 * 1024 * 1024;
@@ -245,9 +244,9 @@
     var opts = options || {};
     var headers = {
       Accept: opts.accept || "application/vnd.github+json",
-      Authorization: "Bearer " + token,
       "X-GitHub-Api-Version": "2022-11-28"
     };
+    if (token) headers.Authorization = "Bearer " + token;
     if (opts.body) headers["Content-Type"] = "application/json";
     var res;
     try {
@@ -258,7 +257,7 @@
         cache: "no-store"
       });
     } catch (error) {
-      throw new IntakeError("Could not reach GitHub. Check the connection, then try the token again.");
+      throw new IntakeError("Could not reach GitHub. Check the connection, then try again.");
     }
     var text = await res.text();
     var data = null;
@@ -293,7 +292,6 @@
 
   async function publishModel(options) {
     var token = String(options.token || "").trim();
-    if (!token) throw new IntakeError("Paste a GitHub token.");
     var fetchImpl = options.fetch || fetch;
     var onStatus = options.onStatus || function () {};
     var modelBytes = options.modelBytes || null;
@@ -303,8 +301,17 @@
       throw new IntakeError("The thumbnail is over 5 MB after conversion. Use a smaller image.");
     }
 
-    onStatus("Checking GitHub access…");
-    var auth = await verifyToken(token, fetchImpl);
+    onStatus("Checking the live site…");
+    var auth;
+    if (token) {
+      auth = await verifyToken(token, fetchImpl);
+      token = auth.token;
+    } else {
+      var repo = await gh(fetchImpl, "", repoUrl(""));
+      if (!repo.default_branch) throw new IntakeError("GitHub did not say which branch the site publishes from.");
+      var ownerLogin = repo.owner && repo.owner.login ? repo.owner.login : GITHUB.owner;
+      auth = { login: ownerLogin, branch: repo.default_branch, token: "" };
+    }
     var branch = auth.branch;
 
     for (var attempt = 0; attempt < 2; attempt++) {
@@ -434,11 +441,8 @@
 
   function friendly(error) {
     if (!error) return "Something went wrong.";
-    if (error.status === 401) {
-      return "GitHub rejected that token. Create a fine-grained token with Contents set to Read and write on superimmersive/superimmersive.github.io.";
-    }
-    if (error.status === 403) {
-      return error.message + " Check that Contents is Read and write, and that the token is allowed to push to the live branch.";
+    if (error.status === 401 || error.status === 403) {
+      return "GitHub did not accept the publish. Nothing was committed.";
     }
     return error.message || "Something went wrong.";
   }
@@ -447,8 +451,6 @@
     var app = document.getElementById("app");
     if (!app) return;
 
-    var patInput = document.getElementById("pat");
-    var patStatus = document.getElementById("pat-status");
     var usdzInput = document.getElementById("usdz");
     var usdzMeta = document.getElementById("usdz-meta");
     var thumbInput = document.getElementById("thumb");
@@ -482,11 +484,6 @@
     var booted = false;
     var qrToken = 0;
     var qrObjectUrl = "";
-    var tokenMemory = "";
-
-    function readToken() {
-      return tokenMemory || sessionStorage.getItem(STORAGE.pat) || "";
-    }
 
     function setStatus(message, isError) {
       status.textContent = message || "";
@@ -648,24 +645,6 @@
         if (!faqList.children.length) addFaqRow("", "");
         refresh();
       }
-      if (readToken()) checkToken(false);
-    }
-
-    async function checkToken(announce) {
-      var token = readToken();
-      if (!token) {
-        patStatus.textContent = "No token saved in this tab.";
-        return;
-      }
-      patStatus.textContent = "Checking token…";
-      try {
-        var auth = await verifyToken(token);
-        tokenMemory = auth.token;
-        patStatus.textContent = "Signed in as " + auth.login + ". Publishes commit to " + auth.branch + ". The token stays in this tab only.";
-        if (announce) setStatus("");
-      } catch (error) {
-        patStatus.textContent = friendly(error);
-      }
     }
 
     async function imageFileToJpeg(file) {
@@ -749,26 +728,6 @@
       }
     }
 
-    document.getElementById("pat-form").addEventListener("submit", function (event) {
-      event.preventDefault();
-      var value = patInput.value.trim();
-      if (!value) {
-        patStatus.textContent = "Paste a token first.";
-        return;
-      }
-      tokenMemory = value;
-      sessionStorage.setItem(STORAGE.pat, value);
-      patInput.value = "";
-      checkToken(true);
-    });
-
-    document.getElementById("pat-clear").addEventListener("click", function () {
-      tokenMemory = "";
-      sessionStorage.removeItem(STORAGE.pat);
-      patInput.value = "";
-      patStatus.textContent = "Token removed from this tab.";
-    });
-
     document.getElementById("faq-add").addEventListener("click", function () {
       addFaqRow("", "");
     });
@@ -832,7 +791,6 @@
         var prepared = prepareModel(readForm());
         var file = usdzInput.files && usdzInput.files[0];
         if (file && file.size > MAX_BYTES) throw new IntakeError(sizeWarning(file.size));
-        if (!readToken()) throw new IntakeError("Paste a GitHub token and save it for this tab.");
         var lines = [
           "This commits directly to the live branch of superimmersive/superimmersive.github.io. It does not open a pull request.",
           "",
@@ -869,7 +827,6 @@
         var thumbFile = thumbInput.files && thumbInput.files[0];
         var thumbBytes = thumbFile ? await imageFileToJpeg(thumbFile) : null;
         var published = await publishModel({
-          token: readToken(),
           prepared: prepared,
           modelBytes: modelBytes,
           thumbBytes: thumbBytes,
@@ -914,7 +871,6 @@
     SITE: SITE,
     GITHUB: GITHUB,
     RESERVED_IDS: RESERVED_IDS,
-    STORAGE: STORAGE,
     MAX_BYTES: MAX_BYTES,
     IntakeError: IntakeError,
     slugify: slugify,

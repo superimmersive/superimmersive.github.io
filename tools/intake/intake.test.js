@@ -32,6 +32,9 @@ test("the form is visible without a passphrase gate", () => {
   const js = fs.readFileSync(path.join(__dirname, "intake.js"), "utf8");
   assert.equal(html.includes('id="gate"'), false);
   assert.equal(html.includes("Unlock"), false);
+  assert.equal(html.includes('id="pat"'), false);
+  assert.equal(html.includes("Personal access token"), false);
+  assert.equal(html.includes("GitHub token"), false);
   assert.match(html, /<div id="app">/);
   assert.equal(js.includes("GATE_SHA256"), false);
   assert.equal(Object.hasOwn(api, "GATE_SHA256"), false);

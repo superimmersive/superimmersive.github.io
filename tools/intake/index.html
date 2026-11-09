@@ -147,12 +147,6 @@
 
     <details class="card help">
       <summary>How to publish and test</summary>
-      <h2>GitHub token</h2>
-      <ol>
-        <li>Open <a href="https://github.com/settings/personal-access-tokens/new">fine-grained tokens</a>. Resource owner: <code>superimmersive</code>. Repository: only <code>superimmersive.github.io</code>.</li>
-        <li>Permissions: Contents → Read and write. Nothing else.</li>
-        <li>Paste it here and choose “Save for this tab”. It stays in <code>sessionStorage</code> and is sent only to <code>api.github.com</code>. Closing the tab clears it.</li>
-      </ol>
       <h2>What publish writes</h2>
       <ul>
         <li><code>models/&lt;id&gt;.usdz</code> — the file the app downloads, at <code>https://superimmersive.io/models/&lt;id&gt;.usdz</code>.</li>
@@ -172,20 +166,6 @@
     </details>
 
     <div id="app">
-      <section class="card">
-        <h2>GitHub token</h2>
-        <p class="hint">Fine-grained, this repository only, Contents Read and write. A classic token with the <code>repo</code> scope also works and is broader than you need.</p>
-        <form id="pat-form" autocomplete="off">
-          <label for="pat">Personal access token</label>
-          <input id="pat" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
-          <div class="actions">
-            <button class="btn btn--primary" id="pat-save" type="submit">Save for this tab</button>
-            <button class="btn btn--ghost" id="pat-clear" type="button">Remove token</button>
-          </div>
-        </form>
-        <p id="pat-status" class="hint" role="status"></p>
-      </section>
-
       <section class="card">
         <h2>Model</h2>
         <label for="usdz">USDZ</label>

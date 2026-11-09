@@ -2,22 +2,11 @@
 
 Unlisted page: [https://superimmersive.io/tools/intake/](https://superimmersive.io/tools/intake/)
 
-Devon uses it to put a product on the Superimmersive AR app without a manual commit. The page is static. The browser talks to the GitHub Git Data API and creates **one commit on the live branch** (`main`). There is no server, and the token is not stored in this repository.
+Devon uses it to put a product on the Superimmersive AR app without a manual commit. The page is static. The browser talks to the GitHub Git Data API and creates **one commit on the live branch** (`main`). There is no server.
 
 `/tools/` is already disallowed in `robots.txt`. The page also sends `noindex`.
 
-The passphrase gate is off for now. The form is visible as soon as the page loads. The GitHub token is what stops a publish.
-
-## GitHub token
-
-1. Create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new).
-2. Resource owner: `superimmersive`. Repository access: only `superimmersive.github.io`.
-3. Permissions: **Contents → Read and write**. Leave the rest at No access.
-4. On the intake page, paste the token and choose **Save for this tab**.
-
-The token lives in `sessionStorage` under `si-intake-pat`. Closing the tab clears it. The page sends it only to `https://api.github.com` and then clears the field. A classic token with the `repo` scope also works; it can see every repo that account can, so prefer the fine-grained one.
-
-The commit is authored as the GitHub user who owns the token. It lands on the repository default branch, which GitHub Pages serves at superimmersive.io. It does not open a pull request. If a ruleset blocks that push, GitHub returns the error on the page and nothing is half-published.
+The passphrase gate is off. The page does not ask for a GitHub token.
 
 ## What a publish writes
 
@@ -63,7 +52,6 @@ If that App Clip build is already invoked from App Store Connect for this domain
 - **Direct to live.** A publish updates `main` immediately. There is no review commit on a branch. The four example models cannot be replaced from the page.
 - **Deploy lag and cache.** The commit can exist on GitHub before superimmersive.io serves the new file. `catalog.json` can stay cached for a short time.
 - **One commit, then a retry.** The USDZ, thumbnail, sidecar, and catalog change are one commit, so the catalog does not point at a missing file. If `main` moves during the upload, the page retries once and will not force-push.
-- **Token scope.** The token can write every file in this repository, not only `models/`. Keep it fine-grained, on this repo only, and clear it on a shared machine.
 - **Thumbnail.** Saved for the studio at `models/thumbs/<id>.jpg`. It is intentionally absent from `catalog.json`.
 - **Quick Look MIME.** GitHub Pages does not let us set `model/vnd.usdz+zip`. The app already downloads the example USDZ files from these URLs. The `/ar` button is only the browser fallback when the clip does not open.
 - **Authoring.** Spec text is plain text. FAQ rows need both a question and an answer. Empty rows are dropped.
