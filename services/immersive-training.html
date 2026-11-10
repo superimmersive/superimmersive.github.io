@@ -12,7 +12,7 @@
   <meta property="og:title" content="Immersive VR Training in South Africa | Superimmersive">
   <meta property="og:description" content="Immersive training for colleges, safety teams, and industry. VR simulations and browser exercises from Superimmersive Art in George, Western Cape.">
   <meta property="og:url" content="https://superimmersive.io/services/immersive-training.html">
-  <meta property="og:image" content="https://superimmersive.io/assets/services/simulation-training.png">
+  <meta property="og:image" content="https://superimmersive.io/assets/services/simulation-training.jpg">
   <meta property="og:image:width" content="1536">
   <meta property="og:image:height" content="1024">
   <meta property="og:image:alt" content="Medical student in a Meta Quest 3 headset with a holographic human body">
@@ -29,6 +29,7 @@
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="../index.html">Home</a>
+      <a href="../work/index.html">Work</a>
       <a href="xr-ar-webar.html">XR &amp; WebAR</a>
       <a href="immersive-training.html" aria-current="page">Training</a>
       <a href="3d-interactive.html">3D</a>
@@ -38,7 +39,7 @@
   </header>
   <main id="top">
     <section class="hero hero--product">
-      <img class="hero__still" src="../assets/services/simulation-training.png" alt="" width="1600" height="900">
+      <img class="hero__still" src="../assets/services/simulation-training.jpg" alt="" width="1600" height="900">
       <div class="hero__copy">
         <p class="kicker">Service · Industry and education</p>
         <h1>Immersive and VR training for industry and education</h1>
@@ -73,6 +74,7 @@
           <li><a class="text-link" href="../index.html#top">Craniotomy training demo</a> on the homepage, with a Quest APK and a web build.</li>
           <li><a class="text-link" href="../products/vr-training.html">Simulation-based training tools</a>, the product page for licensing and the studio delivery record.</li>
           <li><a class="text-link" href="../products/driving-simulator.html">VR driving-school simulator</a>. Documentation is complete and the build is in prototype, framed around South African driving standards and the K53 test. It is not a finished school product yet.</li>
+          <li><a class="text-link" href="vr-training-medical.html">Medical and industrial VR training</a>, with the craniotomy demo you can open.</li>
         </ul>
       </div>
     </section>
@@ -110,23 +112,36 @@
         <li><a href="3d-interactive.html">3D and interactive web</a></li>
         <li><a href="../products/vr-training.html">Simulation tools product</a></li>
         <li><a href="../products/driving-simulator.html">Driving simulator</a></li>
+        <li><a href="vr-training-medical.html">Medical and industrial VR</a></li>
+        <li><a href="../work/medical-vr-training.html">Craniotomy case note</a></li>
       </ul>
     </section>
 
-    <section class="sheet contact">
-      <h2>Contact</h2>
-      <address>
-        <a href="mailto:devon@superimmersive.io">devon@superimmersive.io</a>
-        <a href="tel:+27685943568">068 594 3568</a>
-        <span>Devon Gray Kirchner · Director</span>
-        <span>Superimmersive Art (Pty) Ltd · George, Western Cape</span>
-      </address>
+        <section class="sheet ask" id="contact">
+      <h2>Start a project</h2>
+      <p class="ask__lede">One ask: tell Devon what you want built. Sending opens an email to devon@superimmersive.io. Nothing is stored on this site.</p>
+      <!-- Formspree: set action to https://formspree.io/f/YOUR_FORM_ID. js/main.js submits to Formspree when the host matches, and otherwise builds the mailto. See docs/measurement.md. -->
+      <form class="ask__form" action="mailto:devon@superimmersive.io" method="post" data-ask data-subject="Training project — Superimmersive">
+        <input type="hidden" name="_subject" value="Training project — Superimmersive">
+        <label>Name
+          <input name="name" type="text" required autocomplete="name" maxlength="120">
+        </label>
+        <label>Email
+          <input name="email" type="email" required autocomplete="email" maxlength="200">
+        </label>
+        <label>What do you need?
+          <textarea name="message" required rows="5" maxlength="4000"></textarea>
+        </label>
+        <button class="prop-btn prop-btn--primary" type="submit">Email Devon</button>
+      </form>
+      <p class="ask__fine">Superimmersive Art (Pty) Ltd · George, Western Cape · <a href="tel:+27685943568">068 594 3568</a></p>
       <nav class="pager" aria-label="Services">
         <a href="xr-ar-webar.html">← XR and WebAR</a>
         <a href="3d-interactive.html">3D and interactive web →</a>
       </nav>
     </section>
   </main>
+  <script src="../js/measure.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

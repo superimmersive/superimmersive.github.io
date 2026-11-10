@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 
+# Marketing pages stay crawlable, including /work/ case notes and /services/.
+
 # App and utility routes. Marketing pages stay crawlable.
 # Model files under /models/ stay allowed for the AR app and App Clip.
 Disallow: /ar/
