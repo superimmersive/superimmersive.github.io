@@ -12,7 +12,7 @@
   <meta property="og:title" content="WebAR and AR from Print | Superimmersive">
   <meta property="og:description" content="WebAR from books, menus, packaging, cards, and vehicles. Published demos from Superimmersive Art in George, Western Cape.">
   <meta property="og:url" content="https://superimmersive.io/products/webar.html">
-  <meta property="og:image" content="https://superimmersive.io/assets/products/webar.png">
+  <meta property="og:image" content="https://superimmersive.io/assets/products/webar.jpg">
   <meta property="og:image:width" content="1536">
   <meta property="og:image:height" content="1024">
   <meta property="og:image:alt" content="WebAR and AR from Print | Superimmersive">
@@ -29,6 +29,7 @@
     </a>
     <nav class="nav" aria-label="Primary">
       <a href="../index.html">Home</a>
+      <a href="../work/index.html">Work</a>
       <a href="../services/xr-ar-webar.html">XR &amp; WebAR</a>
       <a href="../services/immersive-training.html">Training</a>
       <a href="../services/3d-interactive.html">3D</a>
@@ -38,11 +39,15 @@
   </header>
   <main id="top">
     <section class="hero hero--product">
-      <img class="hero__still" src="../assets/products/webar.png" alt="" width="1600" height="900">
+      <img class="hero__still" src="../assets/products/webar.jpg" alt="" width="1600" height="900">
       <div class="hero__copy">
         <p class="kicker">Product + services</p>
         <h1>AR books and WebAR line</h1>
-        <p class="lede">Multiple working WebAR demos published. Unity 2022.3.</p>
+        <p class="lede">Markers you can download: a menu, a floorplan, retail, a card, a vehicle ad, and a packaging clip. Unity 2022.3. Built in George.</p>
+        <div class="hero__actions">
+          <a class="prop-btn prop-btn--primary" href="#demos">Open the markers</a>
+          <a class="prop-btn prop-btn--ghost" href="../work/webar-from-print.html">Read the case note</a>
+        </div>
       </div>
     </section>
 
@@ -120,13 +125,13 @@
       </div>
     </section>
 
-    <section class="sheet">
+    <section class="sheet" id="demos">
       <h2>Demo examples</h2>
       <p class="note" style="margin: -1.5rem 0 2.75rem; max-width: 38rem;">Image markers and a demo clip from the WebAR demos. Scan the QR code, then the image.</p>
       <div class="catalog catalog--markers">
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR Restaurant Menu">
-            <img src="../assets/products/webar-demos/restaurant-menu.jpg" alt="AR restaurant menu marker" width="1130" height="1600">
+            <img src="../assets/products/webar-demos/restaurant-menu.jpg" alt="AR restaurant menu marker" width="1130" height="1600" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR Restaurant Menu</strong>
@@ -136,7 +141,7 @@
         </article>
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR Floorplan">
-            <img src="../assets/products/webar-demos/floorplan.jpg" alt="AR floorplan marker" width="1600" height="1156">
+            <img src="../assets/products/webar-demos/floorplan.jpg" alt="AR floorplan marker" width="1600" height="1156" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR Floorplan</strong>
@@ -146,7 +151,7 @@
         </article>
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR Animal Tattoos">
-            <img src="../assets/products/webar-demos/animal-tattoos.jpg" alt="AR animal tattoos marker sheet" width="1131" height="1600">
+            <img src="../assets/products/webar-demos/animal-tattoos.jpg" alt="AR animal tattoos marker sheet" width="1131" height="1600" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR Animal Tattoos</strong>
@@ -156,7 +161,7 @@
         </article>
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR In Retail">
-            <img src="../assets/products/webar-demos/in-retail.jpg" alt="AR retail sofa marker" width="1500" height="1000">
+            <img src="../assets/products/webar-demos/in-retail.jpg" alt="AR retail sofa marker" width="1500" height="1000" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR In Retail</strong>
@@ -166,7 +171,7 @@
         </article>
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR Vehicle Advertising">
-            <img src="../assets/products/webar-demos/vehicle.jpg" alt="AR vehicle advertising marker" width="1600" height="1600">
+            <img src="../assets/products/webar-demos/vehicle.jpg" alt="AR vehicle advertising marker" width="1600" height="1600" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR Vehicle Advertising</strong>
@@ -176,7 +181,7 @@
         </article>
         <article class="panel">
           <button type="button" class="panel__frame panel__frame--zoom" aria-label="View larger: AR Smart Business Card">
-            <img src="../assets/products/webar-demos/business-card.jpg" alt="AR smart business card marker" width="1600" height="916">
+            <img src="../assets/products/webar-demos/business-card.jpg" alt="AR smart business card marker" width="1600" height="916" loading="lazy" decoding="async">
           </button>
           <span class="panel__cap">
             <strong>AR Smart Business Card</strong>
@@ -199,18 +204,31 @@
       </div>
     </section>
 
-    <section class="sheet contact">
-      <address>
-        <a href="mailto:devon@superimmersive.io">devon@superimmersive.io</a>
-        <a href="tel:+27685943568">068 594 3568</a>
-        <span>Superimmersive Art (Pty) Ltd · George, Western Cape</span>
-      </address>
+        <section class="sheet ask" id="contact">
+      <h2>Start a project</h2>
+      <p class="ask__lede">One ask: tell Devon what you want built. Sending opens an email to devon@superimmersive.io. Nothing is stored on this site.</p>
+      <!-- Formspree: set action to https://formspree.io/f/YOUR_FORM_ID. js/main.js submits to Formspree when the host matches, and otherwise builds the mailto. See docs/measurement.md. -->
+      <form class="ask__form" action="mailto:devon@superimmersive.io" method="post" data-ask data-subject="WebAR project — Superimmersive">
+        <input type="hidden" name="_subject" value="WebAR project — Superimmersive">
+        <label>Name
+          <input name="name" type="text" required autocomplete="name" maxlength="120">
+        </label>
+        <label>Email
+          <input name="email" type="email" required autocomplete="email" maxlength="200">
+        </label>
+        <label>What do you need?
+          <textarea name="message" required rows="5" maxlength="4000"></textarea>
+        </label>
+        <button class="prop-btn prop-btn--primary" type="submit">Email Devon</button>
+      </form>
+      <p class="ask__fine">Superimmersive Art (Pty) Ltd · George, Western Cape · <a href="tel:+27685943568">068 594 3568</a></p>
       <nav class="pager" aria-label="Products">
         <a href="lekkeleer.html">← LekkeLeer</a>
         <a href="book-a-barber.html">Book a Barber →</a>
       </nav>
     </section>
   </main>
+  <script src="../js/measure.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

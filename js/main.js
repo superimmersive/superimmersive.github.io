@@ -525,7 +525,48 @@
         show(index);
       });
 
-      show(0);
+      var started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        show(0);
+      }
+
+      if (!("IntersectionObserver" in window)) {
+        start();
+        return;
+      }
+
+      var watcher = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          start();
+          watcher.disconnect();
+        });
+      }, { rootMargin: "240px 0px" });
+      watcher.observe(video);
     });
   })();
+
+  document.querySelectorAll("form[data-ask]").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+      var action = form.getAttribute("action") || "";
+      if (/formspree\.io/i.test(action)) return;
+      event.preventDefault();
+      var data = new FormData(form);
+      var subject = form.getAttribute("data-subject") || "Project enquiry — Superimmersive";
+      var body = [
+        "Name: " + (data.get("name") || ""),
+        "Email: " + (data.get("email") || ""),
+        "Page: " + location.href,
+        "",
+        String(data.get("message") || "")
+      ].join("\n");
+      window.location.href =
+        "mailto:devon@superimmersive.io?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+    });
+  });
 })();
